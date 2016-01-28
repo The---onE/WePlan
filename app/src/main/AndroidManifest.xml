@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.xmx.weplan">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:name=".Application"
         android:allowBackup="true"
@@ -25,6 +27,17 @@
         <activity
             android:name=".User.RegisterActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".InformationActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AddPlanActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service
+            android:name=".TimerService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

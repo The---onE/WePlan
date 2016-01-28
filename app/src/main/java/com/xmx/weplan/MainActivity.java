@@ -1,5 +1,6 @@
 package com.xmx.weplan;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -8,6 +9,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.text.format.Time;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.avos.avoscloud.AVObject;
@@ -22,15 +25,31 @@ public class MainActivity extends BaseNavigationActivity {
     int[] num = {R.drawable._0, R.drawable._1, R.drawable._2, R.drawable._3, R.drawable._4,
             R.drawable._5, R.drawable._6, R.drawable._7, R.drawable._8, R.drawable._9};
 
-    Handler timerHandler = new Handler() {
+    private class TimerHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             refreshTime();
 
-            timerHandler.sendEmptyMessageDelayed(0, 1000);
+            timerHandler.sendEmptyMessageDelayed(0, 450);
         }
-    };
+    }
+
+    TimerHandler timerHandler = new TimerHandler();
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        timerHandler.sendEmptyMessage(0);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        timerHandler.removeMessages(0);
+    }
 
     void refreshTime() {
         Time t = new Time();
@@ -75,11 +94,20 @@ public class MainActivity extends BaseNavigationActivity {
     @Override
     protected void initView(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
+
+        Intent service = new Intent(this, TimerService.class);
+        startService(service);
     }
 
     @Override
     protected void setListener() {
-
+        Button addPlan = getViewById(R.id.add_plan);
+        addPlan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(AddPlanActivity.class);
+            }
+        });
     }
 
     @Override
@@ -111,8 +139,6 @@ public class MainActivity extends BaseNavigationActivity {
 
             }
         });
-
-        timerHandler.sendEmptyMessage(0);
     }
 
     @Override
