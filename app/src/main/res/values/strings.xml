@@ -1,8 +1,28 @@
 <resources>
-    <string name="app_name">WePlan</string>
+    <string name="app_name">微计划</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="nickname">昵称</string>
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+    <string name="password2">确认密码</string>
+    <string name="login">登录</string>
+    <string name="register">注册</string>
+
+    <string name="add_item">添加分类</string>
+    <string name="add_item_tag">标签</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="confirm_exit">再按一次退出程序</string>
+    <string name="default_string">加载中&#8230;</string>
+
+    <string name="subscribe">关注</string>
+    <string name="unsubscribe">取关</string>
+
+    <string name="message_is_null">请输入要发送的内容</string>
+    <string name="unsupported_message_type">暂不支持此消息类型</string>
 
     <string name="action_settings">Settings</string>
 </resources>
