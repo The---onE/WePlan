@@ -1,17 +1,14 @@
 package com.xmx.weplan;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
-import android.support.design.widget.NavigationView;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.text.format.Time;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import com.avos.avoscloud.AVObject;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
@@ -21,6 +18,59 @@ import com.xmx.weplan.User.UserManager;
 public class MainActivity extends BaseNavigationActivity {
     private long exitTime = 0;
     static long LONGEST_EXIT_TIME = 2000;
+
+    int[] num = {R.drawable._0, R.drawable._1, R.drawable._2, R.drawable._3, R.drawable._4,
+            R.drawable._5, R.drawable._6, R.drawable._7, R.drawable._8, R.drawable._9};
+
+    Handler timerHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            refreshTime();
+
+            timerHandler.sendEmptyMessageDelayed(0, 1000);
+        }
+    };
+
+    void refreshTime() {
+        Time t = new Time();
+        t.setToNow();
+        int mon = t.month + 1;
+        int day = t.monthDay;
+        int hour = t.hour;
+        int min = t.minute;
+        int sec = t.second;
+
+        ImageView mon1 = getViewById(R.id.mon1);
+        mon1.setImageResource(num[mon / 10]);
+
+        ImageView mon2 = getViewById(R.id.mon2);
+        mon2.setImageResource(num[mon % 10]);
+
+        ImageView day1 = getViewById(R.id.day1);
+        day1.setImageResource(num[day / 10]);
+
+        ImageView day2 = getViewById(R.id.day2);
+        day2.setImageResource(num[day % 10]);
+
+        ImageView hour1 = getViewById(R.id.hour1);
+        hour1.setImageResource(num[hour / 10]);
+
+        ImageView hour2 = getViewById(R.id.hour2);
+        hour2.setImageResource(num[hour % 10]);
+
+        ImageView min1 = getViewById(R.id.min1);
+        min1.setImageResource(num[min / 10]);
+
+        ImageView min2 = getViewById(R.id.min2);
+        min2.setImageResource(num[min % 10]);
+
+        ImageView sec1 = getViewById(R.id.sec1);
+        sec1.setImageResource(num[sec / 10]);
+
+        ImageView sec2 = getViewById(R.id.sec2);
+        sec2.setImageResource(num[sec % 10]);
+    }
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -33,7 +83,8 @@ public class MainActivity extends BaseNavigationActivity {
     }
 
     @Override
-    protected void processLogic(Bundle savedInstanceState) {UserManager.getInstance().setContext(this);
+    protected void processLogic(Bundle savedInstanceState) {
+        UserManager.getInstance().setContext(this);
         UserManager.getInstance().autoLogin(new AutoLoginCallback() {
             @Override
             public void success(AVObject user) {
@@ -60,6 +111,8 @@ public class MainActivity extends BaseNavigationActivity {
 
             }
         });
+
+        timerHandler.sendEmptyMessage(0);
     }
 
     @Override
