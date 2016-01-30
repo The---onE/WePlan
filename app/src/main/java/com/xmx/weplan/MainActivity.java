@@ -125,10 +125,10 @@ public class MainActivity extends BaseNavigationActivity {
 
         if (c.moveToFirst()) {
             do {
-                String title = c.getString(1);
-                long time = c.getLong(3);
+                String title = SQLManager.getTitle(c);
+                long time = SQLManager.getTime(c);
 
-                Plan p = new Plan(title, "" + time);
+                Plan p = new Plan(title, time);
                 plans.add(p);
             } while (c.moveToNext());
         }

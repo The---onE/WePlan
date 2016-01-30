@@ -19,6 +19,18 @@ public class SQLManager {
         openDatabase();
     }
 
+    public static int getId(Cursor c) {
+        return c.getInt(0);
+    }
+
+    public static String getTitle(Cursor c) {
+        return c.getString(1);
+    }
+
+    public static long getTime(Cursor c) {
+        return c.getLong(3);
+    }
+
     private boolean openDatabase() {
         String d = android.os.Environment.getExternalStorageDirectory() + "/WePlan/Database";
         File dir = new File(d);

@@ -37,8 +37,8 @@ public class TimerService extends Service {
             long time = c.getLong(3);
             long now = System.currentTimeMillis();
             if (now > time) {
-                showNotification(c.getString(1));
-                sqlManager.completPlan(c.getInt(0));
+                showNotification(SQLManager.getTitle(c));
+                sqlManager.completPlan(SQLManager.getId(c));
                 return true;
             } else {
                 return false;
