@@ -12,7 +12,7 @@ import com.xmx.weplan.R;
 import java.util.Date;
 
 public class AddPlanActivity extends BaseTempActivity {
-    SQLManager sqlManager = new SQLManager();
+    SQLManager sqlManager = SQLManager.getInstance();
 
     @Override
     protected void initView(Bundle savedInstanceState) {

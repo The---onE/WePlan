@@ -18,12 +18,16 @@ import java.util.List;
  */
 public class PlanAdapter extends BaseAdapter {
     Context mContext;
-    SQLManager sqlManager = new SQLManager();
     List<Plan> mPlans;
 
     public PlanAdapter(Context context, List<Plan> plans) {
         mContext = context;
         mPlans = plans;
+    }
+
+    public void changeList(List<Plan> plans) {
+        mPlans = plans;
+        notifyDataSetChanged();
     }
 
     @Override

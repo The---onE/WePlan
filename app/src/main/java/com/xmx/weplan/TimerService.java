@@ -17,7 +17,7 @@ import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.Plan.InformationActivity;
 
 public class TimerService extends Service {
-    SQLManager sqlManager = new SQLManager();
+    SQLManager sqlManager = SQLManager.getInstance();
 
     Handler timerHandler = new Handler() {
         @Override
@@ -38,7 +38,7 @@ public class TimerService extends Service {
             long now = System.currentTimeMillis();
             if (now > time) {
                 showNotification(SQLManager.getTitle(c));
-                sqlManager.completPlan(SQLManager.getId(c));
+                sqlManager.completePlan(SQLManager.getId(c));
                 return true;
             } else {
                 return false;

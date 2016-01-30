@@ -34,13 +34,31 @@ public class MainActivity extends BaseNavigationActivity {
     static int[] num = {R.drawable._0, R.drawable._1, R.drawable._2, R.drawable._3, R.drawable._4,
             R.drawable._5, R.drawable._6, R.drawable._7, R.drawable._8, R.drawable._9};
 
-    SQLManager sqlManager = new SQLManager();
+    PlanAdapter adapter;
+
+    SQLManager sqlManager = SQLManager.getInstance();
 
     private class TimerHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             refreshTime();
+            if (sqlManager.isChanged()) {
+                Cursor c = sqlManager.selectFuturePlan();
+                List<Plan> plans = new ArrayList<>();
+                if (c.moveToFirst()) {
+                    do {
+                        String title = SQLManager.getTitle(c);
+                        long time = SQLManager.getTime(c);
+
+                        Plan p = new Plan(title, time);
+                        plans.add(p);
+                    } while (c.moveToNext());
+                }
+                adapter.changeList(plans);
+
+                sqlManager.processedChange();
+            }
 
             timerHandler.sendEmptyMessageDelayed(0, 450);
         }
@@ -120,9 +138,8 @@ public class MainActivity extends BaseNavigationActivity {
             }
         });
 
-        List<Plan> plans = new ArrayList<>();
         Cursor c = sqlManager.selectFuturePlan();
-
+        List<Plan> plans = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
                 String title = SQLManager.getTitle(c);
@@ -134,7 +151,7 @@ public class MainActivity extends BaseNavigationActivity {
         }
 
         ListView planList = getViewById(R.id.list_plan);
-        PlanAdapter adapter = new PlanAdapter(this, plans);
+        adapter = new PlanAdapter(this, plans);
         planList.setAdapter(adapter);
     }
 

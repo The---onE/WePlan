@@ -12,11 +12,28 @@ import java.util.Date;
  * Created by The_onE on 2015/10/23.
  */
 public class SQLManager {
+    private static SQLManager instance;
 
     SQLiteDatabase database = null;
+    boolean changeFlag = false;
 
-    public SQLManager() {
+    public synchronized static SQLManager getInstance() {
+        if (null == instance) {
+            instance = new SQLManager();
+        }
+        return instance;
+    }
+
+    private SQLManager() {
         openDatabase();
+    }
+
+    public boolean isChanged() {
+        return changeFlag;
+    }
+
+    public void processedChange() {
+        changeFlag = false;
     }
 
     public static int getId(Cursor c) {
@@ -74,6 +91,7 @@ public class SQLManager {
         content.put("TIME", date.getTime());
 
         database.insert("PLAN", null, content);
+        changeFlag = true;
 
         return true;
     }
@@ -85,9 +103,10 @@ public class SQLManager {
         return database.rawQuery("select * from PLAN where STATUS = 0 order by TIME asc limit " + 1, null);
     }
 
-    public void completPlan(int id) {
+    public void completePlan(int id) {
         String update = "update PLAN set STATUS = 1 where ID = " + id;
         database.execSQL(update);
+        changeFlag = true;
     }
 
     public Cursor selectFuturePlan() {
