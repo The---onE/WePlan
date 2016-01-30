@@ -78,27 +78,11 @@ public class SQLManager {
         database.execSQL(update);
     }
 
-    //ID TITLE TEXT TIME STATUS
-    public Cursor selectAllOrderByTime() {
+    public Cursor selectFuturePlan() {
         if (!checkDatabase()) {
             return null;
         }
-        return database.rawQuery("select * from PLAN order by TIME desc", null);
-    }
-
-    public int getCount() {
-        if (!checkDatabase()) {
-            return -1;
-        }
-        Cursor c = selectAll();
-        return c.getCount();
-    }
-
-    public Cursor selectAll() {
-        if (!checkDatabase()) {
-            return null;
-        }
-        return database.rawQuery("select * from PLAN", null);
+        return database.rawQuery("select * from PLAN where STATUS = 0 order by TIME", null);
     }
 
     public Cursor selectById(long id) {
@@ -106,19 +90,5 @@ public class SQLManager {
             return null;
         }
         return database.rawQuery("select * from PLAN where ID=" + id, null);
-    }
-
-    public Cursor selectTopOrderByTime(int count) {
-        if (!checkDatabase()) {
-            return null;
-        }
-        return database.rawQuery("select * from PLAN order by TIME desc limit " + count, null);
-    }
-
-    public Cursor selectOneNoteOrderByTime(int pos) {
-        if (!checkDatabase()) {
-            return null;
-        }
-        return database.rawQuery("select * from PLAN order by TIME desc limit " + pos + ", 1", null);
     }
 }

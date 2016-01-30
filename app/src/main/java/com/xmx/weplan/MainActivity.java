@@ -1,6 +1,7 @@
 package com.xmx.weplan;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,18 +13,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import com.avos.avoscloud.AVObject;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
+import com.xmx.weplan.Adapter.PlanAdapter;
+import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.User.Callback.AutoLoginCallback;
 import com.xmx.weplan.User.UserManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends BaseNavigationActivity {
     private long exitTime = 0;
     static long LONGEST_EXIT_TIME = 2000;
 
-    int[] num = {R.drawable._0, R.drawable._1, R.drawable._2, R.drawable._3, R.drawable._4,
+    static int[] num = {R.drawable._0, R.drawable._1, R.drawable._2, R.drawable._3, R.drawable._4,
             R.drawable._5, R.drawable._6, R.drawable._7, R.drawable._8, R.drawable._9};
+
+    SQLManager sqlManager = new SQLManager();
 
     private class TimerHandler extends Handler {
         @Override
@@ -108,6 +117,23 @@ public class MainActivity extends BaseNavigationActivity {
                 startActivity(AddPlanActivity.class);
             }
         });
+
+        List<Plan> plans = new ArrayList<>();
+        Cursor c = sqlManager.selectFuturePlan();
+
+        if (c.moveToFirst()) {
+            do {
+                String title = c.getString(1);
+                long time = c.getLong(3);
+
+                Plan p = new Plan(title, "" + time);
+                plans.add(p);
+            } while (c.moveToNext());
+        }
+
+        ListView planList = getViewById(R.id.list_plan);
+        PlanAdapter adapter = new PlanAdapter(this, plans);
+        planList.setAdapter(adapter);
     }
 
     @Override

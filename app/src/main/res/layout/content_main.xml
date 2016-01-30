@@ -16,7 +16,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:background="#000000"
         android:gravity="center">
 
@@ -111,5 +110,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="添加计划" />
+
+    <ListView
+        android:id="@+id/list_plan"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
