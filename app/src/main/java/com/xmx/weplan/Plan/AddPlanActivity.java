@@ -1,4 +1,4 @@
-package com.xmx.weplan;
+package com.xmx.weplan.Plan;
 
 import android.os.Bundle;
 import android.view.View;
@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
 import com.xmx.weplan.Database.SQLManager;
+import com.xmx.weplan.R;
 
 import java.util.Date;
 

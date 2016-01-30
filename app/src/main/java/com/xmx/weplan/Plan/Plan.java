@@ -1,4 +1,4 @@
-package com.xmx.weplan;
+package com.xmx.weplan.Plan;
 
 /**
  * Created by The_onE on 2016/1/30.

@@ -17,8 +17,10 @@ import android.widget.ListView;
 
 import com.avos.avoscloud.AVObject;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
-import com.xmx.weplan.Adapter.PlanAdapter;
+import com.xmx.weplan.Plan.AddPlanActivity;
+import com.xmx.weplan.Plan.Plan;
 import com.xmx.weplan.Database.SQLManager;
+import com.xmx.weplan.Plan.PlanAdapter;
 import com.xmx.weplan.User.Callback.AutoLoginCallback;
 import com.xmx.weplan.User.UserManager;
 

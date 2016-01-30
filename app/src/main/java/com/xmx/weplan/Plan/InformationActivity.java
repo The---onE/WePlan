@@ -1,8 +1,9 @@
-package com.xmx.weplan;
+package com.xmx.weplan.Plan;
 
 import android.os.Bundle;
 
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
+import com.xmx.weplan.R;
 
 public class InformationActivity extends BaseTempActivity {
 

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.avos.avospush.notification.NotificationCompat;
 import com.xmx.weplan.Database.SQLManager;
+import com.xmx.weplan.Plan.InformationActivity;
 
 public class TimerService extends Service {
     SQLManager sqlManager = new SQLManager();

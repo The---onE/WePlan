@@ -1,4 +1,4 @@
-package com.xmx.weplan.Adapter;
+package com.xmx.weplan.Plan;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -9,7 +9,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.xmx.weplan.Database.SQLManager;
-import com.xmx.weplan.Plan;
 import com.xmx.weplan.R;
 
 import java.util.List;

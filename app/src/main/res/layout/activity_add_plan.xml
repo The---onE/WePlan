@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".AddPlanActivity">
+    tools:context=".Plan.AddPlanActivity">
 
     <include layout="@layout/tool_bar" />
 
