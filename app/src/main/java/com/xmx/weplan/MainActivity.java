@@ -37,6 +37,7 @@ public class MainActivity extends BaseNavigationActivity {
             R.drawable._5, R.drawable._6, R.drawable._7, R.drawable._8, R.drawable._9};
 
     PlanAdapter adapter;
+    List<Plan> plans = new ArrayList<>();
 
     SQLManager sqlManager = SQLManager.getInstance();
 
@@ -47,7 +48,7 @@ public class MainActivity extends BaseNavigationActivity {
             refreshTime();
             if (sqlManager.isChanged()) {
                 Cursor c = sqlManager.selectFuturePlan();
-                List<Plan> plans = new ArrayList<>();
+                plans.clear();
                 if (c.moveToFirst()) {
                     do {
                         int id = SQLManager.getId(c);
@@ -142,7 +143,7 @@ public class MainActivity extends BaseNavigationActivity {
         });
 
         Cursor c = sqlManager.selectFuturePlan();
-        final List<Plan> plans = new ArrayList<>();
+        plans.clear();
         if (c.moveToFirst()) {
             do {
                 int id= SQLManager.getId(c);
