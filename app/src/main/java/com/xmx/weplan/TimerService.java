@@ -18,6 +18,7 @@ import com.xmx.weplan.Plan.InformationActivity;
 
 public class TimerService extends Service {
     SQLManager sqlManager = SQLManager.getInstance();
+    static final long DELAY_TIME = 1000 * 60 * 5;
 
     Handler timerHandler = new Handler() {
         @Override
@@ -34,11 +35,14 @@ public class TimerService extends Service {
         Cursor c = sqlManager.getLatestPlan();
 
         if (c.moveToFirst()) {
-            long time = c.getLong(3);
+            int id = SQLManager.getId(c);
+            long time = SQLManager.getActualTime(c);
             long now = System.currentTimeMillis();
             if (now > time) {
-                showNotification(SQLManager.getTitle(c));
-                sqlManager.completePlan(SQLManager.getId(c));
+                showNotification(id, SQLManager.getTitle(c));
+                //sqlManager.completePlan(id);
+                time += DELAY_TIME;
+                sqlManager.delayPlan(id, time);
                 return true;
             } else {
                 return false;
@@ -48,10 +52,12 @@ public class TimerService extends Service {
         }
     }
 
-    void showNotification(String title) {
+    void showNotification(int id, String title) {
         int notificationId = title.hashCode();
 
         Intent intent = new Intent(this, InformationActivity.class);
+        intent.putExtra("id", id);
+        intent.putExtra("title", title);
         PendingIntent contentIntent = PendingIntent.getActivity(this, notificationId, intent, 0);
 
         NotificationCompat.Builder mBuilder =

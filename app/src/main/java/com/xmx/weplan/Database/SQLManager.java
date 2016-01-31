@@ -44,7 +44,7 @@ public class SQLManager {
         return c.getString(1);
     }
 
-    public static long getTime(Cursor c) {
+    public static long getActualTime(Cursor c) {
         return c.getLong(3);
     }
 
@@ -66,8 +66,9 @@ public class SQLManager {
                     "ID integer not null primary key autoincrement, " +
                     "TITLE text not null, " +
                     "TEXT text, " +
-                    "TIME integer not null default(0), " +
-                    "STATUS integer default(0)" +
+                    "ACTUAL_TIME integer not null default(0), " +
+                    "STATUS integer default(0), " +
+                    "PLAN_TIME integer not null default(0)" +
                     ")";
             database.execSQL(createPlanSQL);
         } else {
@@ -88,7 +89,8 @@ public class SQLManager {
         ContentValues content = new ContentValues();
         content.put("TITLE", title);
         content.put("TEXT", text);
-        content.put("TIME", date.getTime());
+        content.put("ACTUAL_TIME", date.getTime());
+        content.put("PLAN_TIME", date.getTime());
 
         database.insert("PLAN", null, content);
         changeFlag = true;
@@ -100,7 +102,7 @@ public class SQLManager {
         if (!checkDatabase()) {
             return null;
         }
-        return database.rawQuery("select * from PLAN where STATUS = 0 order by TIME asc limit " + 1, null);
+        return database.rawQuery("select * from PLAN where STATUS = 0 order by ACTUAL_TIME asc limit " + 1, null);
     }
 
     public void completePlan(int id) {
@@ -109,11 +111,17 @@ public class SQLManager {
         changeFlag = true;
     }
 
+    public void delayPlan(int id, long newTime) {
+        String update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
+        database.execSQL(update);
+        changeFlag = true;
+    }
+
     public Cursor selectFuturePlan() {
         if (!checkDatabase()) {
             return null;
         }
-        return database.rawQuery("select * from PLAN where STATUS = 0 order by TIME", null);
+        return database.rawQuery("select * from PLAN where STATUS = 0 order by ACTUAL_TIME", null);
     }
 
     public Cursor selectById(long id) {

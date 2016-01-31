@@ -49,7 +49,7 @@ public class MainActivity extends BaseNavigationActivity {
                 if (c.moveToFirst()) {
                     do {
                         String title = SQLManager.getTitle(c);
-                        long time = SQLManager.getTime(c);
+                        long time = SQLManager.getActualTime(c);
 
                         Plan p = new Plan(title, time);
                         plans.add(p);
@@ -143,7 +143,7 @@ public class MainActivity extends BaseNavigationActivity {
         if (c.moveToFirst()) {
             do {
                 String title = SQLManager.getTitle(c);
-                long time = SQLManager.getTime(c);
+                long time = SQLManager.getActualTime(c);
 
                 Plan p = new Plan(title, time);
                 plans.add(p);
