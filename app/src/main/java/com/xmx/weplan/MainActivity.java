@@ -11,6 +11,7 @@ import android.text.format.Time;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -18,6 +19,7 @@ import android.widget.ListView;
 import com.avos.avoscloud.AVObject;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
 import com.xmx.weplan.Plan.AddPlanActivity;
+import com.xmx.weplan.Plan.InformationActivity;
 import com.xmx.weplan.Plan.Plan;
 import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.Plan.PlanAdapter;
@@ -48,10 +50,11 @@ public class MainActivity extends BaseNavigationActivity {
                 List<Plan> plans = new ArrayList<>();
                 if (c.moveToFirst()) {
                     do {
+                        int id = SQLManager.getId(c);
                         String title = SQLManager.getTitle(c);
                         long time = SQLManager.getActualTime(c);
 
-                        Plan p = new Plan(title, time);
+                        Plan p = new Plan(id, title, time);
                         plans.add(p);
                     } while (c.moveToNext());
                 }
@@ -139,13 +142,14 @@ public class MainActivity extends BaseNavigationActivity {
         });
 
         Cursor c = sqlManager.selectFuturePlan();
-        List<Plan> plans = new ArrayList<>();
+        final List<Plan> plans = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
+                int id= SQLManager.getId(c);
                 String title = SQLManager.getTitle(c);
                 long time = SQLManager.getActualTime(c);
 
-                Plan p = new Plan(title, time);
+                Plan p = new Plan(id, title, time);
                 plans.add(p);
             } while (c.moveToNext());
         }
@@ -153,6 +157,17 @@ public class MainActivity extends BaseNavigationActivity {
         ListView planList = getViewById(R.id.list_plan);
         adapter = new PlanAdapter(this, plans);
         planList.setAdapter(adapter);
+
+        planList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getBaseContext(), InformationActivity.class);
+                Plan plan = plans.get(position);
+                intent.putExtra("id", plan.getId());
+                intent.putExtra("title", plan.getTitle());
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
