@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Random;
 
 /**
  * Created by The_onE on 2015/10/23.
@@ -15,8 +16,7 @@ public class SQLManager {
     private static SQLManager instance;
 
     SQLiteDatabase database = null;
-    boolean changeFlagService = false;
-    boolean changeFlagActivity = false;
+    int version = new Random().nextInt();
 
     public synchronized static SQLManager getInstance() {
         if (null == instance) {
@@ -29,20 +29,8 @@ public class SQLManager {
         openDatabase();
     }
 
-    public boolean isChangedService() {
-        return changeFlagService;
-    }
-
-    public boolean isChangedActivity() {
-        return changeFlagActivity;
-    }
-
-    public void processedChangeService() {
-        changeFlagService = false;
-    }
-
-    public void processedChangeActivity() {
-        changeFlagActivity = false;
+    public int getVersion() {
+        return version;
     }
 
     public static int getId(Cursor c) {
@@ -102,8 +90,8 @@ public class SQLManager {
         content.put("PLAN_TIME", date.getTime());
 
         database.insert("PLAN", null, content);
-        changeFlagService = true;
-        changeFlagActivity = true;
+
+        version++;
 
         return true;
     }
@@ -118,15 +106,15 @@ public class SQLManager {
     public void completePlan(int id) {
         String update = "update PLAN set STATUS = 1 where ID = " + id;
         database.execSQL(update);
-        changeFlagService = true;
-        changeFlagActivity = true;
+
+        version++;
     }
 
     public void delayPlan(int id, long newTime) {
         String update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
         database.execSQL(update);
-        changeFlagService = true;
-        changeFlagActivity = true;
+
+        version++;
     }
 
     public Cursor selectFuturePlan() {

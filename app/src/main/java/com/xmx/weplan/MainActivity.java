@@ -40,13 +40,14 @@ public class MainActivity extends BaseNavigationActivity {
     List<Plan> plans = new ArrayList<>();
 
     SQLManager sqlManager = SQLManager.getInstance();
+    int version = 0;
 
     private class TimerHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             refreshTime();
-            if (sqlManager.isChangedActivity()) {
+            if (sqlManager.getVersion() != version) {
                 Cursor c = sqlManager.selectFuturePlan();
                 plans.clear();
                 if (c.moveToFirst()) {
@@ -61,7 +62,7 @@ public class MainActivity extends BaseNavigationActivity {
                 }
                 adapter.changeList(plans);
 
-                sqlManager.processedChangeActivity();
+                version = sqlManager.getVersion();
             }
 
             timerHandler.sendEmptyMessageDelayed(0, 450);

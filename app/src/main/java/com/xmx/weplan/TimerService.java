@@ -18,6 +18,8 @@ import com.xmx.weplan.Plan.InformationActivity;
 
 public class TimerService extends Service {
     SQLManager sqlManager = SQLManager.getInstance();
+    int version = 0;
+
     static final long DELAY_TIME = 1000 * 60 * 5;
     int latestId;
     String latestTitle;
@@ -51,11 +53,11 @@ public class TimerService extends Service {
     }
 
     boolean checkTime() {
-        if (sqlManager.isChangedService()) {
+        if (sqlManager.getVersion() != version) {
             if (!getLatestPlan()) {
                 return false;
             }
-            sqlManager.processedChangeService();
+            version = sqlManager.getVersion();
         }
 
         if (latestFlag) {
