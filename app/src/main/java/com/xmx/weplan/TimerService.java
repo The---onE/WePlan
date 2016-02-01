@@ -19,6 +19,10 @@ import com.xmx.weplan.Plan.InformationActivity;
 public class TimerService extends Service {
     SQLManager sqlManager = SQLManager.getInstance();
     static final long DELAY_TIME = 1000 * 60 * 5;
+    int latestId;
+    String latestTitle;
+    long latestTime;
+    boolean latestFlag = false;
 
     Handler timerHandler = new Handler() {
         @Override
@@ -31,18 +35,36 @@ public class TimerService extends Service {
         }
     };
 
-    boolean checkTime() {
+    boolean getLatestPlan() {
         Cursor c = sqlManager.getLatestPlan();
 
         if (c.moveToFirst()) {
-            int id = SQLManager.getId(c);
-            long time = SQLManager.getActualTime(c);
+            latestId = SQLManager.getId(c);
+            latestTime = SQLManager.getActualTime(c);
+            latestTitle = SQLManager.getTitle(c);
+            latestFlag = true;
+        } else {
+            latestFlag = false;
+        }
+
+        return latestFlag;
+    }
+
+    boolean checkTime() {
+        if (sqlManager.isChangedService()) {
+            if (!getLatestPlan()) {
+                return false;
+            }
+            sqlManager.processedChangeService();
+        }
+
+        if (latestFlag) {
             long now = System.currentTimeMillis();
-            if (now > time) {
-                showNotification(id, SQLManager.getTitle(c));
+            if (now > latestTime) {
+                showNotification(latestId, latestTitle);
                 //sqlManager.completePlan(id);
-                time += DELAY_TIME;
-                sqlManager.delayPlan(id, time);
+                long time = now + DELAY_TIME;
+                sqlManager.delayPlan(latestId, time);
                 return true;
             } else {
                 return false;
@@ -78,6 +100,8 @@ public class TimerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        getLatestPlan();
 
         timerHandler.sendEmptyMessage(0);
     }

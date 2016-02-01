@@ -15,7 +15,8 @@ public class SQLManager {
     private static SQLManager instance;
 
     SQLiteDatabase database = null;
-    boolean changeFlag = false;
+    boolean changeFlagService = false;
+    boolean changeFlagActivity = false;
 
     public synchronized static SQLManager getInstance() {
         if (null == instance) {
@@ -28,12 +29,20 @@ public class SQLManager {
         openDatabase();
     }
 
-    public boolean isChanged() {
-        return changeFlag;
+    public boolean isChangedService() {
+        return changeFlagService;
     }
 
-    public void processedChange() {
-        changeFlag = false;
+    public boolean isChangedActivity() {
+        return changeFlagActivity;
+    }
+
+    public void processedChangeService() {
+        changeFlagService = false;
+    }
+
+    public void processedChangeActivity() {
+        changeFlagActivity = false;
     }
 
     public static int getId(Cursor c) {
@@ -93,7 +102,8 @@ public class SQLManager {
         content.put("PLAN_TIME", date.getTime());
 
         database.insert("PLAN", null, content);
-        changeFlag = true;
+        changeFlagService = true;
+        changeFlagActivity = true;
 
         return true;
     }
@@ -108,13 +118,15 @@ public class SQLManager {
     public void completePlan(int id) {
         String update = "update PLAN set STATUS = 1 where ID = " + id;
         database.execSQL(update);
-        changeFlag = true;
+        changeFlagService = true;
+        changeFlagActivity = true;
     }
 
     public void delayPlan(int id, long newTime) {
         String update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
         database.execSQL(update);
-        changeFlag = true;
+        changeFlagService = true;
+        changeFlagActivity = true;
     }
 
     public Cursor selectFuturePlan() {

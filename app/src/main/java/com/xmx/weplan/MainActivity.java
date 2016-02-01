@@ -46,7 +46,7 @@ public class MainActivity extends BaseNavigationActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             refreshTime();
-            if (sqlManager.isChanged()) {
+            if (sqlManager.isChangedActivity()) {
                 Cursor c = sqlManager.selectFuturePlan();
                 plans.clear();
                 if (c.moveToFirst()) {
@@ -61,7 +61,7 @@ public class MainActivity extends BaseNavigationActivity {
                 }
                 adapter.changeList(plans);
 
-                sqlManager.processedChange();
+                sqlManager.processedChangeActivity();
             }
 
             timerHandler.sendEmptyMessageDelayed(0, 450);
