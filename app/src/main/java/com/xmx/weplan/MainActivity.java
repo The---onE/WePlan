@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TabHost;
 
 import com.avos.avoscloud.AVObject;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
@@ -38,6 +39,8 @@ public class MainActivity extends BaseNavigationActivity {
 
     PlanAdapter adapter;
     List<Plan> plans = new ArrayList<>();
+
+    TabHost tabHost;
 
     SQLManager sqlManager = SQLManager.getInstance();
     int version = 0;
@@ -131,6 +134,13 @@ public class MainActivity extends BaseNavigationActivity {
 
         Intent service = new Intent(this, TimerService.class);
         startService(service);
+
+        tabHost = getViewById(R.id.tabHost);
+        tabHost.setup();
+
+        tabHost.addTab(tabHost.newTabSpec("plan").setIndicator("计划").setContent(R.id.tab_plan));
+        tabHost.addTab(tabHost.newTabSpec("circle").setIndicator("圈子").setContent(R.id.tab_circle));
+        tabHost.addTab(tabHost.newTabSpec("me").setIndicator("我").setContent(R.id.tab_me));
     }
 
     @Override
@@ -147,7 +157,7 @@ public class MainActivity extends BaseNavigationActivity {
         plans.clear();
         if (c.moveToFirst()) {
             do {
-                int id= SQLManager.getId(c);
+                int id = SQLManager.getId(c);
                 String title = SQLManager.getTitle(c);
                 long time = SQLManager.getActualTime(c);
 

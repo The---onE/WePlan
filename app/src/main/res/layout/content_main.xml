@@ -13,107 +13,38 @@
     tools:context="com.xmx.weplan.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <LinearLayout
+    <include layout="@layout/content_clock" />
+
+    <TabHost
+        android:id="@+id/tabHost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000000"
-        android:gravity="center">
+        android:layout_gravity="center_horizontal">
 
-        <ImageView
-            android:id="@+id/mon1"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/_0" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/mon2"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/_0" />
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true">
 
-        <ImageView
-            android:id="@+id/dot1"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/dot" />
+                <include layout="@layout/content_plan" />
 
-        <ImageView
-            android:id="@+id/day1"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/_0" />
+                <include layout="@layout/content_circle" />
 
-        <ImageView
-            android:id="@+id/day2"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/_0" />
+                <include layout="@layout/content_me" />
 
-        <ImageView
-            android:id="@+id/dot2"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/dot" />
+            </FrameLayout>
 
-        <ImageView
-            android:id="@+id/hour1"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/_0" />
-
-        <ImageView
-            android:id="@+id/hour2"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/_0" />
-
-        <ImageView
-            android:id="@+id/dot3"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/dot" />
-
-        <ImageView
-            android:id="@+id/min1"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/_0" />
-
-        <ImageView
-            android:id="@+id/min2"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/_0" />
-
-        <ImageView
-            android:id="@+id/dot4"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/dot" />
-
-        <ImageView
-            android:id="@+id/sec1"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/_0" />
-
-        <ImageView
-            android:id="@+id/sec2"
-            android:layout_width="20dp"
-            android:layout_height="64dp"
-            android:src="@drawable/_0" />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/add_plan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="添加计划" />
-
-    <ListView
-        android:id="@+id/list_plan"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true" />
+        </RelativeLayout>
+    </TabHost>
 
 </LinearLayout>

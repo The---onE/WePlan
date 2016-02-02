@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#000000"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/mon1"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/_0" />
+
+    <ImageView
+        android:id="@+id/mon2"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/_0" />
+
+    <ImageView
+        android:id="@+id/dot1"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/dot" />
+
+    <ImageView
+        android:id="@+id/day1"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/_0" />
+
+    <ImageView
+        android:id="@+id/day2"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/_0" />
+
+    <ImageView
+        android:id="@+id/dot2"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/dot" />
+
+    <ImageView
+        android:id="@+id/hour1"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/_0" />
+
+    <ImageView
+        android:id="@+id/hour2"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/_0" />
+
+    <ImageView
+        android:id="@+id/dot3"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/dot" />
+
+    <ImageView
+        android:id="@+id/min1"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/_0" />
+
+    <ImageView
+        android:id="@+id/min2"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/_0" />
+
+    <ImageView
+        android:id="@+id/dot4"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/dot" />
+
+    <ImageView
+        android:id="@+id/sec1"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/_0" />
+
+    <ImageView
+        android:id="@+id/sec2"
+        android:layout_width="20dp"
+        android:layout_height="64dp"
+        android:src="@drawable/_0" />
+
+</LinearLayout>
