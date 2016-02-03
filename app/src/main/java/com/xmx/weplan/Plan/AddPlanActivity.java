@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TabHost;
 
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
 import com.xmx.weplan.Database.SQLManager;
@@ -13,6 +14,9 @@ import java.util.Date;
 
 public class AddPlanActivity extends BaseTempActivity {
     SQLManager sqlManager = SQLManager.getInstance();
+
+    EditText titleText;
+
     EditText yearText;
     EditText monthText;
     EditText dayText;
@@ -20,11 +24,22 @@ public class AddPlanActivity extends BaseTempActivity {
     EditText minuteText;
     EditText secondText;
 
+    EditText delayYearText;
+    EditText delayMonthText;
+    EditText delayDayText;
+    EditText delayHourText;
+    EditText delayMinuteText;
+    EditText delaySecondText;
+
+    TabHost tabHost;
+
     final static int[] DaysOfMonth = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     @Override
     protected void initView(Bundle savedInstanceState) {
         setContentView(R.layout.activity_add_plan);
+
+        titleText = getViewById(R.id.title);
 
         yearText = getViewById(R.id.year);
         monthText = getViewById(R.id.month);
@@ -33,6 +48,13 @@ public class AddPlanActivity extends BaseTempActivity {
         minuteText = getViewById(R.id.min);
         secondText = getViewById(R.id.sec);
 
+        delayYearText = getViewById(R.id.delay_year);
+        delayMonthText = getViewById(R.id.delay_month);
+        delayDayText = getViewById(R.id.delay_day);
+        delayHourText = getViewById(R.id.delay_hour);
+        delayMinuteText = getViewById(R.id.delay_minute);
+        delaySecondText = getViewById(R.id.delay_second);
+
         Date now = new Date(System.currentTimeMillis());
         yearText.setText("" + (now.getYear() + 1900));
         monthText.setText("" + (now.getMonth() + 1));
@@ -40,15 +62,20 @@ public class AddPlanActivity extends BaseTempActivity {
         hourText.setText("" + now.getHours());
         minuteText.setText("" + now.getMinutes());
         secondText.setText("" + now.getSeconds());
+
+        tabHost = getViewById(R.id.tabHost);
+        tabHost.setup();
+
+        tabHost.addTab(tabHost.newTabSpec("time").setIndicator("定时").setContent(R.id.tab_time));
+        tabHost.addTab(tabHost.newTabSpec("delay").setIndicator("倒计时").setContent(R.id.tab_delay));
     }
 
     @Override
     protected void setListener() {
-        Button ok = getViewById(R.id.ok);
-        ok.setOnClickListener(new View.OnClickListener() {
+        Button timeOk = getViewById(R.id.time_ok);
+        timeOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText titleText = getViewById(R.id.title);
                 if (titleText.getText().toString().equals("")) {
                     showToast("请输入标题");
                     return;
@@ -132,8 +159,69 @@ public class AddPlanActivity extends BaseTempActivity {
             }
         });
 
-        Button cancel = getViewById(R.id.cancel);
-        cancel.setOnClickListener(new View.OnClickListener() {
+        Button delayOk = getViewById(R.id.delay_ok);
+        delayOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (titleText.getText().toString().equals("")) {
+                    showToast("请输入标题");
+                    return;
+                }
+
+                if (delayYearText.getText().toString().equals("")) {
+                    delayYearText.setText("0");
+                }
+                if (delayMonthText.getText().toString().equals("")) {
+                    delayMonthText.setText("0");
+                }
+                if (delayDayText.getText().toString().equals("")) {
+                    delayDayText.setText("0");
+                }
+                if (delayHourText.getText().toString().equals("")) {
+                    delayHourText.setText("0");
+                }
+                if (delayMinuteText.getText().toString().equals("")) {
+                    delayMinuteText.setText("0");
+                }
+                if (delaySecondText.getText().toString().equals("")) {
+                    delaySecondText.setText("0");
+                }
+
+                int year = Integer.valueOf(delayYearText.getText().toString());
+                int month = Integer.valueOf(delayMonthText.getText().toString());
+                int day = Integer.valueOf(delayDayText.getText().toString());
+                int hour = Integer.valueOf(delayHourText.getText().toString());
+                int minute = Integer.valueOf(delayMinuteText.getText().toString());
+                int second = Integer.valueOf(delaySecondText.getText().toString());
+
+                Date plan = new Date(System.currentTimeMillis());
+                plan.setYear(plan.getYear() + year);
+                plan.setMonth(plan.getMonth() + month);
+                plan.setDate(plan.getDate() + day);
+                plan.setHours(plan.getHours() + hour);
+                plan.setMinutes(plan.getMinutes() + minute);
+                plan.setSeconds(plan.getSeconds() + second);
+
+                String title = titleText.getText().toString();
+                if (sqlManager.insertPlan(title, "", plan)) {
+                    showToast("添加成功");
+                    finish();
+                } else {
+                    showToast("添加失败");
+                }
+            }
+        });
+
+        Button timeCancel = getViewById(R.id.time_cancel);
+        timeCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        Button delayCancel = getViewById(R.id.delay_cancel);
+        delayCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tab_time"
+    android:id="@+id/tab_delay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -10,71 +10,82 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/year"
+            android:id="@+id/delay_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="年"
-            android:inputType="number" />
+            android:hint="0  "
+            android:inputType="number"
+            android:text="0" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="." />
+            android:text="年" />
 
         <EditText
-            android:id="@+id/month"
+            android:id="@+id/delay_month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="月"
-            android:inputType="number" />
+            android:hint="0  "
+            android:inputType="number"
+            android:text="0" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="." />
+            android:text="月" />
 
         <EditText
-            android:id="@+id/day"
+            android:id="@+id/delay_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="日"
-            android:inputType="number" />
+            android:hint="0  "
+            android:inputType="number"
+            android:text="0" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="." />
+            android:text="天" />
 
         <EditText
-            android:id="@+id/hour"
+            android:id="@+id/delay_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="时"
-            android:inputType="number" />
+            android:hint="0  "
+            android:inputType="number"
+            android:text="0" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=":" />
+            android:text="小时" />
 
         <EditText
-            android:id="@+id/min"
+            android:id="@+id/delay_minute"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="分"
-            android:inputType="number" />
+            android:hint="0  "
+            android:inputType="number"
+            android:text="0" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=":" />
+            android:text="分钟" />
 
         <EditText
-            android:id="@+id/sec"
+            android:id="@+id/delay_second"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="秒"
-            android:inputType="number" />
+            android:hint="0  "
+            android:inputType="number"
+            android:text="0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="秒后" />
     </LinearLayout>
 
     <LinearLayout
@@ -83,13 +94,13 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/time_ok"
+            android:id="@+id/delay_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="添加" />
 
         <Button
-            android:id="@+id/time_cancel"
+            android:id="@+id/delay_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="取消" />

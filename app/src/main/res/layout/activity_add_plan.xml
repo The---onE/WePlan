@@ -32,7 +32,35 @@
             android:layout_height="wrap_content"
             android:hint="内容" />
 
-        <include layout="@layout/content_add_plan_by_time" />
+        <TabHost
+            android:id="@+id/tabHost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true">
+
+                    <include layout="@layout/content_add_plan_by_time" />
+
+                    <include layout="@layout/content_add_plan_by_delay" />
+
+                </FrameLayout>
+
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true" />
+            </RelativeLayout>
+        </TabHost>
 
     </LinearLayout>
 
