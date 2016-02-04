@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.avos.avospush.notification.NotificationCompat;
 import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.Plan.InformationActivity;
+import com.xmx.weplan.Plan.NotificationTempActivity;
 
 public class TimerService extends Service {
     SQLManager sqlManager = SQLManager.getInstance();
@@ -79,7 +80,7 @@ public class TimerService extends Service {
     }
 
     void showNotification(int id, String title, long delay) {
-        int notificationId = (title + id).hashCode();
+        int notificationId = (title + "|" + id).hashCode();
 
         Intent intent = new Intent(this, InformationActivity.class);
         intent.putExtra("id", id);
@@ -92,6 +93,22 @@ public class TimerService extends Service {
             content += "， 已经拖了" + (delay / 1000 / 60) + "分钟啦！";
         }
 
+        int startId = (title + "|" + id + "s").hashCode();
+        Intent startIntent = new Intent(this, NotificationTempActivity.class);
+        startIntent.putExtra("start", true);
+        startIntent.putExtra("id", id);
+        startIntent.putExtra("title", title);
+        PendingIntent startPending = PendingIntent.getActivity(this, startId,
+                startIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        int delayId = (title + "|" + id + "d").hashCode();
+        Intent delayIntent = new Intent(this, NotificationTempActivity.class);
+        delayIntent.putExtra("start", false);
+        delayIntent.putExtra("id", id);
+        delayIntent.putExtra("title", title);
+        PendingIntent delayPending = PendingIntent.getActivity(this, delayId,
+                delayIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
@@ -99,7 +116,9 @@ public class TimerService extends Service {
                         .setAutoCancel(true)
                         .setContentIntent(contentIntent)
                         .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
-                        .setContentText(content);
+                        .setContentText(content)
+                        .addAction(R.drawable.ic_menu_send, "开始啦", startPending)
+                        .addAction(R.drawable.ic_menu_slideshow, "再等会", delayPending);
         NotificationManager manager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = mBuilder.build();
