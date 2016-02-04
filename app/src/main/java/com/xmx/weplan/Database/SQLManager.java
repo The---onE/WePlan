@@ -45,6 +45,10 @@ public class SQLManager {
         return c.getLong(3);
     }
 
+    public static long getPlanTime(Cursor c) {
+        return c.getLong(5);
+    }
+
     private boolean openDatabase() {
         String d = android.os.Environment.getExternalStorageDirectory() + "/WePlan/Database";
         File dir = new File(d);

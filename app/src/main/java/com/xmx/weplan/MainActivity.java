@@ -51,6 +51,8 @@ public class MainActivity extends BaseNavigationActivity {
             super.handleMessage(msg);
             refreshTime();
             if (sqlManager.getVersion() != version) {
+                version = sqlManager.getVersion();
+
                 Cursor c = sqlManager.selectFuturePlan();
                 plans.clear();
                 if (c.moveToFirst()) {
@@ -64,8 +66,6 @@ public class MainActivity extends BaseNavigationActivity {
                     } while (c.moveToNext());
                 }
                 adapter.changeList(plans);
-
-                version = sqlManager.getVersion();
             }
 
             timerHandler.sendEmptyMessageDelayed(0, 450);
