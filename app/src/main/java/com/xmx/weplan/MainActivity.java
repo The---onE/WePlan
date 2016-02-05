@@ -28,11 +28,16 @@ import com.xmx.weplan.User.Callback.AutoLoginCallback;
 import com.xmx.weplan.User.UserManager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends BaseNavigationActivity {
     private long exitTime = 0;
-    static long LONGEST_EXIT_TIME = 2000;
+    static final long LONGEST_EXIT_TIME = 2000;
+    static final long DAY_TIME = 60*60*24;
+    static final long HOUR_TIME = 60*60;
+    static final long MINUTE_TIME = 60;
+    static final long SECOND_TIME = 1;
 
     static int[] num = {R.drawable._0, R.drawable._1, R.drawable._2, R.drawable._3, R.drawable._4,
             R.drawable._5, R.drawable._6, R.drawable._7, R.drawable._8, R.drawable._9};
@@ -48,27 +53,12 @@ public class MainActivity extends BaseNavigationActivity {
     private class TimerHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
+            timerHandler.sendEmptyMessageDelayed(0, 1000);
             super.handleMessage(msg);
+
             refreshTime();
-            if (sqlManager.getVersion() != version) {
-                version = sqlManager.getVersion();
 
-                Cursor c = sqlManager.selectFuturePlan();
-                plans.clear();
-                if (c.moveToFirst()) {
-                    do {
-                        int id = SQLManager.getId(c);
-                        String title = SQLManager.getTitle(c);
-                        long time = SQLManager.getActualTime(c);
-
-                        Plan p = new Plan(id, title, time);
-                        plans.add(p);
-                    } while (c.moveToNext());
-                }
-                adapter.changeList(plans);
-            }
-
-            timerHandler.sendEmptyMessageDelayed(0, 450);
+            updatePlanList();
         }
     }
 
@@ -126,6 +116,63 @@ public class MainActivity extends BaseNavigationActivity {
 
         ImageView sec2 = getViewById(R.id.sec2);
         sec2.setImageResource(num[sec % 10]);
+    }
+
+    void updatePlanList() {
+        boolean changeFlag = false;
+
+        if (sqlManager.getVersion() != version) {
+            version = sqlManager.getVersion();
+
+            Cursor c = sqlManager.selectFuturePlan();
+            plans.clear();
+            if (c.moveToFirst()) {
+                do {
+                    int id = SQLManager.getId(c);
+                    String title = SQLManager.getTitle(c);
+                    long time = SQLManager.getActualTime(c);
+
+                    Plan p = new Plan(id, title, time);
+                    plans.add(p);
+                } while (c.moveToNext());
+            }
+            changeFlag = true;
+        }
+
+        long now = System.currentTimeMillis() / 1000;
+        for (Plan p : plans) {
+            long pt = p.getTime() / 1000;
+            long delta = pt - now;
+            long newBefore = 0;
+            String newBeforeString = "";
+            if (delta / DAY_TIME > 0) {
+                long day = delta / DAY_TIME;
+                newBefore = day * DAY_TIME;
+                newBeforeString = "还有" + day + "天";
+            } else if (delta / HOUR_TIME > 0 ) {
+                long hour = delta / HOUR_TIME;
+                newBefore = hour * HOUR_TIME;
+                newBeforeString = "还有" + hour + "小时";
+            } else if (delta / MINUTE_TIME > 0) {
+                long minute = delta / MINUTE_TIME;
+                newBefore = minute * MINUTE_TIME;
+                newBeforeString = "还有" + minute + "分钟";
+            } else if (delta / SECOND_TIME > 0) {
+                long second = delta / SECOND_TIME;
+                newBefore = second * SECOND_TIME;
+                newBeforeString = "还有" + second + "秒";
+            }
+
+            if (p.checkBefore(newBefore)) {
+                changeFlag = true;
+                p.setBefore(newBefore);
+                p.setBeforeString(newBeforeString);
+            }
+        }
+
+        if (changeFlag) {
+            adapter.changeList(plans);
+        }
     }
 
     @Override

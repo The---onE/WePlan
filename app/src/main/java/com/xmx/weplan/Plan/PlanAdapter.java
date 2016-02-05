@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
 import java.util.List;
@@ -52,6 +51,7 @@ public class PlanAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView title;
         TextView time;
+        TextView before;
     }
 
     @Override
@@ -62,6 +62,7 @@ public class PlanAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.title = (TextView) convertView.findViewById(R.id.item_title);
             holder.time = (TextView) convertView.findViewById(R.id.item_time);
+            holder.before = (TextView) convertView.findViewById(R.id.item_before);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -71,7 +72,9 @@ public class PlanAdapter extends BaseAdapter {
             holder.title.setText(mPlans.get(position).getTitle());
             holder.title.setTextColor(Color.BLACK);
 
-            holder.time.setText(mPlans.get(position).getTime());
+            holder.time.setText(mPlans.get(position).getTimeString());
+
+            holder.before.setText(mPlans.get(position).getBeforeString());
         } else {
             holder.title.setText("加载失败");
             holder.time.setText("");

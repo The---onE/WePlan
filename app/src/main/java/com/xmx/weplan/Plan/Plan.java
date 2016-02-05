@@ -10,21 +10,19 @@ import java.util.Date;
 public class Plan {
     int mId;
     String mTitle;
-    String mTime;
-
-    public Plan(int id, String title, String time) {
-        mId = id;
-        mTitle = title;
-        mTime = time;
-    }
+    long mTime;
+    String mTimeString;
+    long mBefore;
+    String mBeforeString;
 
     public Plan(int id, String title, long time) {
         mId = id;
         mTitle = title;
-        Date date = new Date(time);
 
+        mTime = time;
+        Date date = new Date(time);
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        mTime = df.format(date);
+        mTimeString = df.format(date);
     }
 
     public int getId() {
@@ -35,7 +33,27 @@ public class Plan {
         return mTitle;
     }
 
-    public String getTime() {
+    public long getTime() {
         return mTime;
+    }
+
+    public String getTimeString () {
+        return mTimeString;
+    }
+
+    public void setBefore(long mBefore) {
+        this.mBefore = mBefore;
+    }
+
+    public boolean checkBefore(long newBefore) {
+        return mBefore != newBefore;
+    }
+
+    public String getBeforeString() {
+        return mBeforeString;
+    }
+
+    public void setBeforeString(String mBeforeString) {
+        this.mBeforeString = mBeforeString;
     }
 }

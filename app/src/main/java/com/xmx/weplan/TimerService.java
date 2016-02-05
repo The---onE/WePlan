@@ -66,7 +66,7 @@ public class TimerService extends Service {
         if (latestFlag) {
             long now = System.currentTimeMillis();
             if (now > latestTime) {
-                showNotification(latestId, latestTitle, latestTime - latestPlanTime);
+                showNotification(latestId, latestTitle, now - latestPlanTime);
                 //sqlManager.completePlan(id);
                 long time = now + DELAY_TIME;
                 sqlManager.delayPlan(latestId, time);
