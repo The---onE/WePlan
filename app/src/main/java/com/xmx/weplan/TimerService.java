@@ -89,7 +89,7 @@ public class TimerService extends Service {
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String content = "该 " + title + " 啦";
-        if (delay > 0) {
+        if ((delay / 1000 / 60) > 0) {
             content += "， 已经拖了" + (delay / 1000 / 60) + "分钟啦！";
         }
 
