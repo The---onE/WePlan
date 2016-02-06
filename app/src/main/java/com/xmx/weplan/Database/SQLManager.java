@@ -58,6 +58,10 @@ public class SQLManager {
         return c.getInt(6);
     }
 
+    public static int getRepeat(Cursor c) {
+        return c.getInt(7);
+    }
+
     private boolean openDatabase() {
         String d = android.os.Environment.getExternalStorageDirectory() + "/WePlan/Database";
         File dir = new File(d);
@@ -79,7 +83,8 @@ public class SQLManager {
                     "ACTUAL_TIME integer not null default(0), " +
                     "STATUS integer default(0), " +
                     "PLAN_TIME integer not null default(0), " +
-                    "TYPE integer default(0)" +
+                    "TYPE integer default(0), " +
+                    "REPEAT integer default(-1)" +
                     ")";
             database.execSQL(createPlanSQL);
         } else {
@@ -93,7 +98,7 @@ public class SQLManager {
         return database != null || openDatabase();
     }
 
-    public boolean insertPlan(String title, String text, Date date, int type) {
+    public boolean insertPlan(String title, String text, Date date, int type, int repeat) {
         if (!checkDatabase()) {
             return false;
         }
@@ -103,6 +108,7 @@ public class SQLManager {
         content.put("ACTUAL_TIME", date.getTime());
         content.put("PLAN_TIME", date.getTime());
         content.put("TYPE", type);
+        content.put("REPEAT", repeat);
 
         database.insert("PLAN", null, content);
 
@@ -118,14 +124,21 @@ public class SQLManager {
         return database.rawQuery("select * from PLAN where STATUS = 0 order by ACTUAL_TIME asc limit " + 1, null);
     }
 
+    public void cancelPlan(int id) {
+        String update = "update PLAN set STATUS = 1 where ID = " + id;
+        database.execSQL(update);
+
+        version++;
+    }
+
     public boolean completePlan(int id) {
         Cursor c = selectById(id);
         if (c == null) {
             return false;
         }
         if (c.moveToFirst()) {
-            int type = getType(c);
             String update;
+            int type = getType(c);
             if (type == DAILY_TYPE) {
                 long planTime = getPlanTime(c);
                 long now = System.currentTimeMillis();
@@ -135,7 +148,13 @@ public class SQLManager {
                     delta = -DAY_TIME;
                 }
                 newTime += (delta / DAY_TIME + 1) * DAY_TIME;
-                update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
+
+                int repeat = getRepeat(c);
+                if (repeat < 0) {
+                    update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
+                } else {
+                    update = "update PLAN set ACTUAL_TIME = " + newTime + ", REPEAT = 1 where ID = " + id;
+                }
             } else {
                 update = "update PLAN set STATUS = 1 where ID = " + id;
             }
@@ -148,11 +167,32 @@ public class SQLManager {
         }
     }
 
-    public void delayPlan(int id, long newTime) {
-        String update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
-        database.execSQL(update);
+    public boolean delayPlan(int id, long newTime) {
+        Cursor c = selectById(id);
+        if (c == null) {
+            return false;
+        }
+        if (c.moveToFirst()) {
+            String update;
+            int repeat = getRepeat(c);
+            if (repeat < 0) {
+                update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
+            } else {
+                repeat--;
+                if (repeat <= 0) {
+                    completePlan(id);
+                    return false;
+                } else {
+                    update = "update PLAN set ACTUAL_TIME = " + newTime + ", REPEAT = " + repeat + " where ID = " + id;
+                }
+            }
+            database.execSQL(update);
 
-        version++;
+            version++;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public Cursor selectFuturePlan() {

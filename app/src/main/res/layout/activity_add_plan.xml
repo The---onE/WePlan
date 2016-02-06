@@ -32,6 +32,26 @@
             android:layout_height="wrap_content"
             android:hint="内容" />
 
+        <RadioGroup
+            android:id="@+id/repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/repeat_infinite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="持续" />
+
+            <RadioButton
+                android:id="@+id/repeat_once"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="提醒" />
+        </RadioGroup>
+
         <CheckBox
             android:id="@+id/daily"
             android:layout_width="wrap_content"

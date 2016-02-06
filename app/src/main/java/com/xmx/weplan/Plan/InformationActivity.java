@@ -23,12 +23,26 @@ public class InformationActivity extends BaseTempActivity {
     @Override
     protected void setListener() {
         id = getIntent().getIntExtra("id", -1);
+
         Button complete = getViewById(R.id.complete);
         if (id > 0) {
             complete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     sqlManager.completePlan(id);
+                    finish();
+                }
+            });
+        } else {
+            showToast("加载出错");
+        }
+
+        Button cancel = getViewById(R.id.cancel);
+        if (id > 0) {
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sqlManager.cancelPlan(id);
                     finish();
                 }
             });

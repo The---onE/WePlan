@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TabHost;
 
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
@@ -17,6 +18,9 @@ public class AddPlanActivity extends BaseTempActivity {
     SQLManager sqlManager = SQLManager.getInstance();
 
     EditText titleText;
+
+    RadioButton repeatInfinite;
+    RadioButton repeatOnce;
 
     CheckBox dailyCheck;
 
@@ -44,6 +48,9 @@ public class AddPlanActivity extends BaseTempActivity {
 
         titleText = getViewById(R.id.title);
 
+        repeatInfinite = getViewById(R.id.repeat_infinite);
+        repeatOnce = getViewById(R.id.repeat_once);
+
         dailyCheck = getViewById(R.id.daily);
 
         yearText = getViewById(R.id.year);
@@ -63,7 +70,7 @@ public class AddPlanActivity extends BaseTempActivity {
         Date now = new Date(System.currentTimeMillis());
         yearText.setText("" + (now.getYear() + 1900));
         monthText.setText("" + (now.getMonth() + 1));
-        dayText.setText("" + now.getDay());
+        dayText.setText("" + now.getDate());
         hourText.setText("" + now.getHours());
         minuteText.setText("" + now.getMinutes());
         secondText.setText("" + now.getSeconds());
@@ -153,13 +160,18 @@ public class AddPlanActivity extends BaseTempActivity {
                 if (plan.getTime() > now) {
                     String title = titleText.getText().toString();
 
+                    int repeat = -1;
+                    if (repeatOnce.isChecked()) {
+                        repeat = 1;
+                    }
+
                     boolean dailyFlag = dailyCheck.isChecked();
                     int type = SQLManager.GENERAL_TYPE;
                     if (dailyFlag) {
                         type = SQLManager.DAILY_TYPE;
                     }
 
-                    if (sqlManager.insertPlan(title, "", plan, type)) {
+                    if (sqlManager.insertPlan(title, "", plan, type, repeat)) {
                         showToast("添加成功");
                         finish();
                     } else {
@@ -216,13 +228,18 @@ public class AddPlanActivity extends BaseTempActivity {
 
                 String title = titleText.getText().toString();
 
+                int repeat = -1;
+                if (repeatOnce.isChecked()) {
+                    repeat = 1;
+                }
+
                 boolean dailyFlag = dailyCheck.isChecked();
                 int type = SQLManager.GENERAL_TYPE;
                 if (dailyFlag) {
                     type = SQLManager.DAILY_TYPE;
                 }
 
-                if (sqlManager.insertPlan(title, "", plan, type)) {
+                if (sqlManager.insertPlan(title, "", plan, type, repeat)) {
                     showToast("添加成功");
                     finish();
                 } else {

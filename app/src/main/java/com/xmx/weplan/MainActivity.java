@@ -129,6 +129,12 @@ public class MainActivity extends BaseNavigationActivity {
                 do {
                     int id = SQLManager.getId(c);
                     String title = SQLManager.getTitle(c);
+
+                    int repeat = SQLManager.getRepeat(c);
+                    if (repeat > 0) {
+                        title += "      提醒";
+                    }
+
                     int type = SQLManager.getType(c);
                     if (type == SQLManager.DAILY_TYPE) {
                         title += "      每日";

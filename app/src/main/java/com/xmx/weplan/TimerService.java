@@ -31,11 +31,10 @@ public class TimerService extends Service {
     Handler timerHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+            timerHandler.sendEmptyMessageDelayed(0, 1000);
             super.handleMessage(msg);
 
             checkTime();
-
-            timerHandler.sendEmptyMessageDelayed(0, 1000);
         }
     };
 
