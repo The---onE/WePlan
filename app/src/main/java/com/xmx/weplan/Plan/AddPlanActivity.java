@@ -3,6 +3,7 @@ package com.xmx.weplan.Plan;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TabHost;
 
@@ -16,6 +17,8 @@ public class AddPlanActivity extends BaseTempActivity {
     SQLManager sqlManager = SQLManager.getInstance();
 
     EditText titleText;
+
+    CheckBox dailyCheck;
 
     EditText yearText;
     EditText monthText;
@@ -40,6 +43,8 @@ public class AddPlanActivity extends BaseTempActivity {
         setContentView(R.layout.activity_add_plan);
 
         titleText = getViewById(R.id.title);
+
+        dailyCheck = getViewById(R.id.daily);
 
         yearText = getViewById(R.id.year);
         monthText = getViewById(R.id.month);
@@ -147,7 +152,14 @@ public class AddPlanActivity extends BaseTempActivity {
                 long now = System.currentTimeMillis();
                 if (plan.getTime() > now) {
                     String title = titleText.getText().toString();
-                    if (sqlManager.insertPlan(title, "", plan)) {
+
+                    boolean dailyFlag = dailyCheck.isChecked();
+                    int type = SQLManager.GENERAL_TYPE;
+                    if (dailyFlag) {
+                        type = SQLManager.DAILY_TYPE;
+                    }
+
+                    if (sqlManager.insertPlan(title, "", plan, type)) {
                         showToast("添加成功");
                         finish();
                     } else {
@@ -203,7 +215,14 @@ public class AddPlanActivity extends BaseTempActivity {
                 plan.setSeconds(plan.getSeconds() + second);
 
                 String title = titleText.getText().toString();
-                if (sqlManager.insertPlan(title, "", plan)) {
+
+                boolean dailyFlag = dailyCheck.isChecked();
+                int type = SQLManager.GENERAL_TYPE;
+                if (dailyFlag) {
+                    type = SQLManager.DAILY_TYPE;
+                }
+
+                if (sqlManager.insertPlan(title, "", plan, type)) {
                     showToast("添加成功");
                     finish();
                 } else {

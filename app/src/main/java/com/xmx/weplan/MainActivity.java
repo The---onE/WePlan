@@ -28,7 +28,6 @@ import com.xmx.weplan.User.Callback.AutoLoginCallback;
 import com.xmx.weplan.User.UserManager;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends BaseNavigationActivity {
@@ -130,6 +129,10 @@ public class MainActivity extends BaseNavigationActivity {
                 do {
                     int id = SQLManager.getId(c);
                     String title = SQLManager.getTitle(c);
+                    int type = SQLManager.getType(c);
+                    if (type == SQLManager.DAILY_TYPE) {
+                        title += "      每日";
+                    }
                     long time = SQLManager.getActualTime(c);
 
                     Plan p = new Plan(id, title, time);

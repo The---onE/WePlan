@@ -15,6 +15,11 @@ import java.util.Random;
 public class SQLManager {
     private static SQLManager instance;
 
+    public static final int GENERAL_TYPE = 0;
+    public static final int DAILY_TYPE = 1;
+
+    static final long DAY_TIME = 1000 * 60 * 60 * 24;
+
     SQLiteDatabase database = null;
     int version = new Random().nextInt();
 
@@ -49,6 +54,10 @@ public class SQLManager {
         return c.getLong(5);
     }
 
+    public static int getType(Cursor c) {
+        return c.getInt(6);
+    }
+
     private boolean openDatabase() {
         String d = android.os.Environment.getExternalStorageDirectory() + "/WePlan/Database";
         File dir = new File(d);
@@ -69,7 +78,8 @@ public class SQLManager {
                     "TEXT text, " +
                     "ACTUAL_TIME integer not null default(0), " +
                     "STATUS integer default(0), " +
-                    "PLAN_TIME integer not null default(0)" +
+                    "PLAN_TIME integer not null default(0), " +
+                    "TYPE integer default(0)" +
                     ")";
             database.execSQL(createPlanSQL);
         } else {
@@ -83,7 +93,7 @@ public class SQLManager {
         return database != null || openDatabase();
     }
 
-    public boolean insertPlan(String title, String text, Date date) {
+    public boolean insertPlan(String title, String text, Date date, int type) {
         if (!checkDatabase()) {
             return false;
         }
@@ -92,6 +102,7 @@ public class SQLManager {
         content.put("TEXT", text);
         content.put("ACTUAL_TIME", date.getTime());
         content.put("PLAN_TIME", date.getTime());
+        content.put("TYPE", type);
 
         database.insert("PLAN", null, content);
 
@@ -107,11 +118,34 @@ public class SQLManager {
         return database.rawQuery("select * from PLAN where STATUS = 0 order by ACTUAL_TIME asc limit " + 1, null);
     }
 
-    public void completePlan(int id) {
-        String update = "update PLAN set STATUS = 1 where ID = " + id;
-        database.execSQL(update);
+    public boolean completePlan(int id) {
+        Cursor c = selectById(id);
+        if (c == null) {
+            return false;
+        }
+        if (c.moveToFirst()) {
+            int type = getType(c);
+            String update;
+            if (type == DAILY_TYPE) {
+                long planTime = getPlanTime(c);
+                long now = System.currentTimeMillis();
+                long newTime = planTime;
+                long delta = now - planTime;
+                if (delta < 0) {
+                    delta = -DAY_TIME;
+                }
+                newTime += (delta / DAY_TIME + 1) * DAY_TIME;
+                update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
+            } else {
+                update = "update PLAN set STATUS = 1 where ID = " + id;
+            }
+            database.execSQL(update);
 
-        version++;
+            version++;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void delayPlan(int id, long newTime) {
@@ -128,7 +162,7 @@ public class SQLManager {
         return database.rawQuery("select * from PLAN where STATUS = 0 order by ACTUAL_TIME", null);
     }
 
-    public Cursor selectById(long id) {
+    public Cursor selectById(int id) {
         if (!checkDatabase()) {
             return null;
         }
