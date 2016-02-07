@@ -26,6 +26,7 @@ public class TimerService extends Service {
     String latestTitle;
     long latestTime;
     long latestPlanTime;
+    int latestRepeat;
     boolean latestFlag = false;
 
     Handler timerHandler = new Handler() {
@@ -46,6 +47,7 @@ public class TimerService extends Service {
             latestTime = SQLManager.getActualTime(c);
             latestTitle = SQLManager.getTitle(c);
             latestPlanTime = SQLManager.getPlanTime(c);
+            latestRepeat = SQLManager.getRepeat(c);
             latestFlag = true;
         } else {
             latestFlag = false;
@@ -65,8 +67,11 @@ public class TimerService extends Service {
         if (latestFlag) {
             long now = System.currentTimeMillis();
             if (now > latestTime) {
-                showNotification(latestId, latestTitle, now - latestPlanTime);
-                //sqlManager.completePlan(id);
+                if (latestRepeat < 0) {
+                    showNotification(latestId, latestTitle, now - latestPlanTime);
+                } else {
+                    showRemindNotification(latestId, latestTitle, now - latestPlanTime);
+                }
                 long time = now + DELAY_TIME;
                 sqlManager.delayPlan(latestId, time);
                 return true;
@@ -76,6 +81,36 @@ public class TimerService extends Service {
         } else {
             return false;
         }
+    }
+
+    void showRemindNotification(int id, String title, long delay) {
+        int notificationId = (title + "|" + id).hashCode();
+
+        Intent intent = new Intent(this, NotificationTempActivity.class);
+        intent.putExtra("start", true);
+        intent.putExtra("id", id);
+        intent.putExtra("title", title);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, notificationId,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String content = "该 " + title + " 啦";
+        if ((delay / 1000 / 60) > 0) {
+            content += "， 已经过了" + (delay / 1000 / 60) + "分钟啦！";
+        }
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("时间到啦")
+                        .setAutoCancel(true)
+                        .setOngoing(true)
+                        .setContentIntent(contentIntent)
+                        .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
+                        .setContentText(content);
+        NotificationManager manager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notification = mBuilder.build();
+        manager.notify(notificationId, notification);
     }
 
     void showNotification(int id, String title, long delay) {
