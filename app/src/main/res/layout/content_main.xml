@@ -28,7 +28,8 @@
             <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@android:id/tabs"
                 android:layout_alignParentTop="true">
 
                 <include layout="@layout/content_plan" />

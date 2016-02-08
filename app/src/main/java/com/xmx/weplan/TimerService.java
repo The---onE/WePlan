@@ -66,7 +66,7 @@ public class TimerService extends Service {
 
         if (latestFlag) {
             long now = System.currentTimeMillis();
-            if (now > latestTime) {
+            if (now > latestTime - 10 * 1000) {
                 if (latestRepeat < 0) {
                     showNotification(latestId, latestTitle, now - latestPlanTime);
                 } else {

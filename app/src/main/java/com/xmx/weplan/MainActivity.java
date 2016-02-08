@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 import com.avos.avoscloud.AVObject;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
@@ -33,8 +34,8 @@ import java.util.List;
 public class MainActivity extends BaseNavigationActivity {
     private long exitTime = 0;
     static final long LONGEST_EXIT_TIME = 2000;
-    static final long DAY_TIME = 60*60*24;
-    static final long HOUR_TIME = 60*60;
+    static final long DAY_TIME = 60 * 60 * 24;
+    static final long HOUR_TIME = 60 * 60;
     static final long MINUTE_TIME = 60;
     static final long SECOND_TIME = 1;
 
@@ -130,18 +131,21 @@ public class MainActivity extends BaseNavigationActivity {
                     int id = SQLManager.getId(c);
                     String title = SQLManager.getTitle(c);
 
+                    boolean remindFlag = false;
+                    boolean dailyFlag = false;
+
                     int repeat = SQLManager.getRepeat(c);
                     if (repeat > 0) {
-                        title += "      提醒";
+                        remindFlag = true;
                     }
 
                     int type = SQLManager.getType(c);
                     if (type == SQLManager.DAILY_TYPE) {
-                        title += "      每日";
+                        dailyFlag = true;
                     }
                     long time = SQLManager.getActualTime(c);
 
-                    Plan p = new Plan(id, title, time);
+                    Plan p = new Plan(id, title, time, remindFlag, dailyFlag);
                     plans.add(p);
                 } while (c.moveToNext());
             }
@@ -158,7 +162,7 @@ public class MainActivity extends BaseNavigationActivity {
                 long day = delta / DAY_TIME;
                 newBefore = day * DAY_TIME;
                 newBeforeString = "还有" + day + "天";
-            } else if (delta / HOUR_TIME > 0 ) {
+            } else if (delta / HOUR_TIME > 0) {
                 long hour = delta / HOUR_TIME;
                 newBefore = hour * HOUR_TIME;
                 newBeforeString = "还有" + hour + "小时";
@@ -208,19 +212,6 @@ public class MainActivity extends BaseNavigationActivity {
                 startActivity(AddPlanActivity.class);
             }
         });
-
-        Cursor c = sqlManager.selectFuturePlan();
-        plans.clear();
-        if (c.moveToFirst()) {
-            do {
-                int id = SQLManager.getId(c);
-                String title = SQLManager.getTitle(c);
-                long time = SQLManager.getActualTime(c);
-
-                Plan p = new Plan(id, title, time);
-                plans.add(p);
-            } while (c.moveToNext());
-        }
 
         ListView planList = getViewById(R.id.list_plan);
         adapter = new PlanAdapter(this, plans);

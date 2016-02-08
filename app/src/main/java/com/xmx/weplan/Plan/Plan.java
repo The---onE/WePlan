@@ -15,7 +15,10 @@ public class Plan {
     long mBefore;
     String mBeforeString;
 
-    public Plan(int id, String title, long time) {
+    boolean mRemindFlag;
+    boolean mDailyFlag;
+
+    public Plan(int id, String title, long time, boolean remindFlag, boolean dailyFlag) {
         mId = id;
         mTitle = title;
 
@@ -23,6 +26,9 @@ public class Plan {
         Date date = new Date(time);
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         mTimeString = df.format(date);
+
+        mRemindFlag = remindFlag;
+        mDailyFlag = dailyFlag;
     }
 
     public int getId() {
@@ -37,7 +43,7 @@ public class Plan {
         return mTime;
     }
 
-    public String getTimeString () {
+    public String getTimeString() {
         return mTimeString;
     }
 
@@ -55,5 +61,13 @@ public class Plan {
 
     public void setBeforeString(String mBeforeString) {
         this.mBeforeString = mBeforeString;
+    }
+
+    public boolean isDailyFlag() {
+        return mDailyFlag;
+    }
+
+    public boolean isRemindFlag() {
+        return mRemindFlag;
     }
 }

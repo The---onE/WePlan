@@ -52,6 +52,9 @@ public class PlanAdapter extends BaseAdapter {
         TextView title;
         TextView time;
         TextView before;
+
+        TextView remind;
+        TextView daily;
     }
 
     @Override
@@ -63,6 +66,8 @@ public class PlanAdapter extends BaseAdapter {
             holder.title = (TextView) convertView.findViewById(R.id.item_title);
             holder.time = (TextView) convertView.findViewById(R.id.item_time);
             holder.before = (TextView) convertView.findViewById(R.id.item_before);
+            holder.remind = (TextView) convertView.findViewById(R.id.remind_tag);
+            holder.daily = (TextView) convertView.findViewById(R.id.daily_tag);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -75,6 +80,18 @@ public class PlanAdapter extends BaseAdapter {
             holder.time.setText(mPlans.get(position).getTimeString());
 
             holder.before.setText(mPlans.get(position).getBeforeString());
+
+            if (mPlans.get(position).isRemindFlag()) {
+                holder.remind.setVisibility(View.VISIBLE);
+            } else {
+                holder.remind.setVisibility(View.INVISIBLE);
+            }
+
+            if (mPlans.get(position).isDailyFlag()) {
+                holder.daily.setVisibility(View.VISIBLE);
+            } else {
+                holder.daily.setVisibility(View.INVISIBLE);
+            }
         } else {
             holder.title.setText("加载失败");
             holder.time.setText("");
