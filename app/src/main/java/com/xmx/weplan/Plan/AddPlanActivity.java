@@ -9,6 +9,7 @@ import android.widget.RadioButton;
 import android.widget.TabHost;
 
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
+import com.xmx.weplan.Database.CloudManager;
 import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
@@ -16,8 +17,10 @@ import java.util.Date;
 
 public class AddPlanActivity extends BaseTempActivity {
     SQLManager sqlManager = SQLManager.getInstance();
+    CloudManager cloudManager = CloudManager.getInstance();
 
     EditText titleText;
+    EditText textText;
 
     RadioButton repeatInfinite;
     RadioButton repeatOnce;
@@ -47,6 +50,7 @@ public class AddPlanActivity extends BaseTempActivity {
         setContentView(R.layout.activity_add_plan);
 
         titleText = getViewById(R.id.title);
+        textText = getViewById(R.id.text);
 
         repeatInfinite = getViewById(R.id.repeat_infinite);
         repeatOnce = getViewById(R.id.repeat_once);
@@ -80,6 +84,17 @@ public class AddPlanActivity extends BaseTempActivity {
 
         tabHost.addTab(tabHost.newTabSpec("time").setIndicator("定时").setContent(R.id.tab_time));
         tabHost.addTab(tabHost.newTabSpec("delay").setIndicator("倒计时").setContent(R.id.tab_delay));
+    }
+
+    void insertPlan(String title, String text, Date plan, int type, int repeat) {
+        if (sqlManager.insertPlan(title, text, plan, type, repeat)) {
+            showToast("添加成功");
+            cloudManager.setContext(this);
+            cloudManager.insertPlan(title, text, plan, type, repeat);
+            finish();
+        } else {
+            showToast("添加失败");
+        }
     }
 
     @Override
@@ -159,6 +174,7 @@ public class AddPlanActivity extends BaseTempActivity {
                 long now = System.currentTimeMillis();
                 if (plan.getTime() > now) {
                     String title = titleText.getText().toString();
+                    String text = textText.getText().toString();
 
                     int repeat = -1;
                     if (repeatOnce.isChecked()) {
@@ -171,12 +187,7 @@ public class AddPlanActivity extends BaseTempActivity {
                         type = SQLManager.DAILY_TYPE;
                     }
 
-                    if (sqlManager.insertPlan(title, "", plan, type, repeat)) {
-                        showToast("添加成功");
-                        finish();
-                    } else {
-                        showToast("添加失败");
-                    }
+                    insertPlan(title, text, plan, type, repeat);
                 } else {
                     showToast("请输入将来的时间");
                 }
@@ -227,6 +238,7 @@ public class AddPlanActivity extends BaseTempActivity {
                 plan.setSeconds(plan.getSeconds() + second);
 
                 String title = titleText.getText().toString();
+                String text = textText.getText().toString();
 
                 int repeat = -1;
                 if (repeatOnce.isChecked()) {
@@ -239,12 +251,7 @@ public class AddPlanActivity extends BaseTempActivity {
                     type = SQLManager.DAILY_TYPE;
                 }
 
-                if (sqlManager.insertPlan(title, "", plan, type, repeat)) {
-                    showToast("添加成功");
-                    finish();
-                } else {
-                    showToast("添加失败");
-                }
+                insertPlan(title, text, plan, type, repeat);
             }
         });
 
