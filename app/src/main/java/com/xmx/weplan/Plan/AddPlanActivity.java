@@ -87,10 +87,11 @@ public class AddPlanActivity extends BaseTempActivity {
     }
 
     void insertPlan(String title, String text, Date plan, int type, int repeat) {
-        if (sqlManager.insertPlan(title, text, plan, type, repeat)) {
+        long id = sqlManager.insertPlan(title, text, plan, type, repeat);
+        if (id >= 0) {
             showToast("添加成功");
             cloudManager.setContext(this);
-            cloudManager.insertPlan(title, text, plan, type, repeat);
+            cloudManager.insertPlan(id, title, text, plan, type, repeat);
             finish();
         } else {
             showToast("添加失败");

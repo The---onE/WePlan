@@ -98,9 +98,9 @@ public class SQLManager {
         return database != null || openDatabase();
     }
 
-    public boolean insertPlan(String title, String text, Date date, int type, int repeat) {
+    public long insertPlan(String title, String text, Date date, int type, int repeat) {
         if (!checkDatabase()) {
-            return false;
+            return -1;
         }
         ContentValues content = new ContentValues();
         content.put("TITLE", title);
@@ -110,11 +110,11 @@ public class SQLManager {
         content.put("TYPE", type);
         content.put("REPEAT", repeat);
 
-        database.insert("PLAN", null, content);
+        long id = database.insert("PLAN", null, content);
 
         version++;
 
-        return true;
+        return id;
     }
 
     public Cursor getLatestPlan() {

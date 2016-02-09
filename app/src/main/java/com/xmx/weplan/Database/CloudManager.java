@@ -30,12 +30,13 @@ public class CloudManager {
         mContext = context;
     }
 
-    public void insertPlan(final String title, final String text, final Date date, final int type, final int repeat) {
+    public void insertPlan(final long id, final String title, final String text, final Date date, final int type, final int repeat) {
         UserManager.getInstance().checkLogin(new AutoLoginCallback() {
             @Override
             public void success(AVObject user) {
                 AVObject post = new AVObject("PlanList");
 
+                post.put("sql_id", id);
                 post.put("title", title);
                 post.put("text", text);
                 post.put("date", date.getTime());
