@@ -5,11 +5,13 @@ import android.view.View;
 import android.widget.Button;
 
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
+import com.xmx.weplan.Database.CloudManager;
 import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
 public class InformationActivity extends BaseTempActivity {
     SQLManager sqlManager = SQLManager.getInstance();
+    CloudManager cloudManager = CloudManager.getInstance();
     int id;
 
     @Override
@@ -43,6 +45,7 @@ public class InformationActivity extends BaseTempActivity {
                 @Override
                 public void onClick(View v) {
                     sqlManager.cancelPlan(id);
+                    cloudManager.cancelPlan(id);
                     finish();
                 }
             });

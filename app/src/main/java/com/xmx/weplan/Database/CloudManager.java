@@ -5,11 +5,14 @@ import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.SaveCallback;
 import com.xmx.weplan.User.Callback.AutoLoginCallback;
 import com.xmx.weplan.User.UserManager;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by The_onE on 2016/2/9.
@@ -42,6 +45,7 @@ public class CloudManager {
                 post.put("date", date.getTime());
                 post.put("type", type);
                 post.put("repeat", repeat);
+                post.put("status", 0);
                 post.put("user", user.get("username"));
                 post.put("pubTimestamp", System.currentTimeMillis() / 1000);
 
@@ -52,6 +56,61 @@ public class CloudManager {
                             showToast("云保存成功");
                         } else {
                             e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void notLoggedIn() {
+                showToast("请登录");
+            }
+
+            @Override
+            public void errorNetwork() {
+                showToast("网络连接失败");
+            }
+
+            @Override
+            public void errorUsername() {
+                showToast("请登录");
+            }
+
+            @Override
+            public void errorChecksum() {
+                showToast("请重新登录");
+            }
+        });
+    }
+
+    public void cancelPlan(final int id) {
+        UserManager.getInstance().checkLogin(new AutoLoginCallback() {
+            @Override
+            public void success(AVObject user) {
+                final AVQuery<AVObject> query = new AVQuery<>("PlanList");
+                query.whereEqualTo("user", user.get("username"));
+                query.whereEqualTo("sql_id", id);
+                query.findInBackground(new FindCallback<AVObject>() {
+                    public void done(List<AVObject> avObjects, AVException e) {
+                        if (e == null) {
+                            if (avObjects.size() > 0) {
+                                final AVObject plan = avObjects.get(0);
+                                plan.put("status", 1);
+                                plan.saveInBackground(new SaveCallback() {
+                                    @Override
+                                    public void done(AVException e) {
+                                        if (e == null) {
+                                            showToast("云同步成功");
+                                        } else {
+                                            showToast("云同步失败");
+                                        }
+                                    }
+                                });
+                            } else {
+                                showToast("云同步失败");
+                            }
+                        } else {
+                            showToast("云同步失败");
                         }
                     }
                 });
