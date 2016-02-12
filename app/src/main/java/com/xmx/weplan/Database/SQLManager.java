@@ -109,6 +109,7 @@ public class SQLManager {
         content.put("PLAN_TIME", date.getTime());
         content.put("TYPE", type);
         content.put("REPEAT", repeat);
+        content.put("STATUS", 0);
 
         long id = database.insert("PLAN", null, content);
 
@@ -180,7 +181,9 @@ public class SQLManager {
             } else {
                 repeat--;
                 if (repeat <= 0) {
-                    completePlan(id);
+                    if (completePlan(id)) {
+                        CloudManager.getInstance().completePlan(id);
+                    }
                     return false;
                 } else {
                     update = "update PLAN set ACTUAL_TIME = " + newTime + ", REPEAT = " + repeat + " where ID = " + id;

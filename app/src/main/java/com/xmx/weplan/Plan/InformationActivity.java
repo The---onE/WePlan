@@ -31,7 +31,9 @@ public class InformationActivity extends BaseTempActivity {
             complete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    sqlManager.completePlan(id);
+                    if (sqlManager.completePlan(id)) {
+                        cloudManager.completePlan(id);
+                    }
                     finish();
                 }
             });

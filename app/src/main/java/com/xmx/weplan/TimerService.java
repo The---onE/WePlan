@@ -13,12 +13,14 @@ import android.os.Message;
 import android.widget.Toast;
 
 import com.avos.avospush.notification.NotificationCompat;
+import com.xmx.weplan.Database.CloudManager;
 import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.Plan.InformationActivity;
 import com.xmx.weplan.Plan.NotificationTempActivity;
 
 public class TimerService extends Service {
     SQLManager sqlManager = SQLManager.getInstance();
+    CloudManager cloudManager = CloudManager.getInstance();
     int version = 0;
 
     static final long DELAY_TIME = 1000 * 60 * 3;
@@ -73,7 +75,9 @@ public class TimerService extends Service {
                     showRemindNotification(latestId, latestTitle, now - latestPlanTime);
                 }
                 long time = now + DELAY_TIME;
-                sqlManager.delayPlan(latestId, time);
+                if (sqlManager.delayPlan(latestId, time)) {
+                    cloudManager.delayPlan(latestId, time);
+                }
                 return true;
             } else {
                 return false;
