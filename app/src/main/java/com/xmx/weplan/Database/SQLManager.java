@@ -98,6 +98,17 @@ public class SQLManager {
         return database != null || openDatabase();
     }
 
+    public boolean clearDatabase() {
+        if (!checkDatabase()) {
+            return false;
+        }
+        String clear = "delete from PLAN";
+        database.execSQL(clear);
+
+        version++;
+        return true;
+    }
+
     public long insertPlan(String title, String text, Date date, int type, int repeat) {
         if (!checkDatabase()) {
             return -1;
@@ -112,6 +123,28 @@ public class SQLManager {
         content.put("STATUS", 0);
 
         long id = database.insert("PLAN", null, content);
+
+        version++;
+
+        return id;
+    }
+
+    public long insertPlan(long id, String title, String text, long actualTime,
+                           long planTime, int type, int repeat) {
+        if (!checkDatabase()) {
+            return -1;
+        }
+        ContentValues content = new ContentValues();
+        content.put("ID", id);
+        content.put("TITLE", title);
+        content.put("TEXT", text);
+        content.put("ACTUAL_TIME", actualTime);
+        content.put("PLAN_TIME", planTime);
+        content.put("TYPE", type);
+        content.put("REPEAT", repeat);
+        content.put("STATUS", 0);
+
+        database.insert("PLAN", null, content);
 
         version++;
 

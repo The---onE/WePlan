@@ -116,8 +116,6 @@ public abstract class BaseNavigationActivity extends BaseActivity
         Menu menu = navigation.getMenu();
         final MenuItem login = menu.findItem(R.id.nav_manage);
 
-        UserManager.getInstance().setContext(this);
-
         UserManager.getInstance().checkLogin(new AutoLoginCallback() {
             @Override
             public void success(AVObject user) {

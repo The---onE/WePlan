@@ -6,6 +6,7 @@ import android.widget.EditText;
 
 import com.avos.avoscloud.AVObject;
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
+import com.xmx.weplan.Database.CloudManager;
 import com.xmx.weplan.R;
 import com.xmx.weplan.User.Callback.AutoLoginCallback;
 import com.xmx.weplan.User.Callback.LoginCallback;
@@ -21,6 +22,7 @@ public class LoginActivity extends BaseTempActivity {
                     @Override
                     public void success(AVObject user) {
                         showToast("登录成功");
+                        CloudManager.getInstance().setPlansToSQL(user);
                         finish();
                     }
 
@@ -78,6 +80,7 @@ public class LoginActivity extends BaseTempActivity {
                             @Override
                             public void success(AVObject user) {
                                 showToast("登录成功");
+                                CloudManager.getInstance().setPlansToSQL(user);
                                 finish();
                             }
 

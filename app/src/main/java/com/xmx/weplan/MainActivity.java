@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.avos.avoscloud.AVObject;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
+import com.xmx.weplan.Database.CloudManager;
 import com.xmx.weplan.Plan.AddPlanActivity;
 import com.xmx.weplan.Plan.InformationActivity;
 import com.xmx.weplan.Plan.Plan;
@@ -231,11 +232,11 @@ public class MainActivity extends BaseNavigationActivity {
 
     @Override
     protected void processLogic(Bundle savedInstanceState) {
-        UserManager.getInstance().setContext(this);
         UserManager.getInstance().autoLogin(new AutoLoginCallback() {
             @Override
             public void success(AVObject user) {
                 showToast("登录成功");
+                CloudManager.getInstance().setPlansToSQL(user);
                 checkLoggedIn();
             }
 

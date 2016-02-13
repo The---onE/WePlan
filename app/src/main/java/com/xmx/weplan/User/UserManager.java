@@ -144,11 +144,6 @@ public class UserManager {
         return mSP.getBoolean("loggedin", false);
     }
 
-    public String getNickname() {
-        String nickname = mSP.getString("nickname", "");
-        return nickname.equals("") ? "匿名" : nickname;
-    }
-
     public void register(final String username, final String password, final String nickname, final RegisterCallback registerCallback) {
         final AVQuery<AVObject> query = AVQuery.getQuery("UserInf");
         query.whereEqualTo("username", username);

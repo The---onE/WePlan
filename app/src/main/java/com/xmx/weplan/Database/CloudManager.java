@@ -289,6 +289,34 @@ public class CloudManager {
         });
     }
 
+    public void setPlansToSQL(AVObject user) {
+        final AVQuery<AVObject> query = new AVQuery<>("PlanList");
+        query.whereEqualTo("user", user.get("username"));
+        query.findInBackground(new FindCallback<AVObject>() {
+            public void done(List<AVObject> avObjects, AVException e) {
+                if (e == null) {
+                    if (avObjects.size() > 0) {
+                        SQLManager sqlManager = SQLManager.getInstance();
+                        sqlManager.clearDatabase();
+                        for (AVObject plan : avObjects) {
+                            long id = plan.getLong("sql_id");
+                            String title = plan.getString("title");
+                            String text = plan.getString("text");
+                            long actualTime = plan.getLong("actualTime");
+                            long planTime = plan.getLong("planTime");
+                            int type = plan.getInt("type");
+                            int repeat = plan.getInt("repeat");
+                            sqlManager.insertPlan(id, title, text, actualTime, planTime, type, repeat);
+                        }
+                        showToast("云同步完成");
+                    }
+                } else {
+                    showToast("云同步失败");
+                }
+            }
+        });
+    }
+
     protected void showToast(String str) {
         Toast.makeText(mContext, str, Toast.LENGTH_SHORT).show();
     }
