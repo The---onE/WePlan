@@ -10,8 +10,6 @@ import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
 public class InformationActivity extends BaseTempActivity {
-    SQLManager sqlManager = SQLManager.getInstance();
-    CloudManager cloudManager = CloudManager.getInstance();
     int id;
 
     @Override
@@ -31,8 +29,8 @@ public class InformationActivity extends BaseTempActivity {
             complete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (sqlManager.completePlan(id)) {
-                        cloudManager.completePlan(id);
+                    if (SQLManager.getInstance().completePlan(id)) {
+                        SQLManager.getInstance().completePlan(id);
                     }
                     finish();
                 }
@@ -46,8 +44,8 @@ public class InformationActivity extends BaseTempActivity {
             cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    sqlManager.cancelPlan(id);
-                    cloudManager.cancelPlan(id);
+                    SQLManager.getInstance().cancelPlan(id);
+                    CloudManager.getInstance().cancelPlan(id);
                     finish();
                 }
             });

@@ -19,8 +19,6 @@ import com.xmx.weplan.Plan.InformationActivity;
 import com.xmx.weplan.Plan.NotificationTempActivity;
 
 public class TimerService extends Service {
-    SQLManager sqlManager = SQLManager.getInstance();
-    CloudManager cloudManager = CloudManager.getInstance();
     int version = 0;
 
     static final long DELAY_TIME = 1000 * 60 * 3;
@@ -42,7 +40,7 @@ public class TimerService extends Service {
     };
 
     boolean getLatestPlan() {
-        Cursor c = sqlManager.getLatestPlan();
+        Cursor c = SQLManager.getInstance().getLatestPlan();
 
         if (c.moveToFirst()) {
             latestId = SQLManager.getId(c);
@@ -59,6 +57,7 @@ public class TimerService extends Service {
     }
 
     boolean checkTime() {
+        SQLManager sqlManager = SQLManager.getInstance();
         if (sqlManager.getVersion() != version) {
             version = sqlManager.getVersion();
             if (!getLatestPlan()) {
@@ -76,7 +75,7 @@ public class TimerService extends Service {
                 }
                 long time = now + DELAY_TIME;
                 if (sqlManager.delayPlan(latestId, time)) {
-                    cloudManager.delayPlan(latestId, time);
+                    CloudManager.getInstance().delayPlan(latestId, time);
                 }
                 return true;
             } else {

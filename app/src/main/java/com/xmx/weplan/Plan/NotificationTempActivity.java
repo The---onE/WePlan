@@ -10,8 +10,6 @@ import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
 public class NotificationTempActivity extends Activity {
-    SQLManager sqlManager = SQLManager.getInstance();
-    CloudManager cloudManager = CloudManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +20,8 @@ public class NotificationTempActivity extends Activity {
         int id = getIntent().getIntExtra("id", -1);
         String title = getIntent().getStringExtra("title");
         if (flag) {
-            if (sqlManager.completePlan(id)) {
-                cloudManager.completePlan(id);
+            if (SQLManager.getInstance().completePlan(id)) {
+                CloudManager.getInstance().completePlan(id);
             }
         }
 

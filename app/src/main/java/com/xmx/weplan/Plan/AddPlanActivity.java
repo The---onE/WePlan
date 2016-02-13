@@ -16,9 +16,6 @@ import com.xmx.weplan.R;
 import java.util.Date;
 
 public class AddPlanActivity extends BaseTempActivity {
-    SQLManager sqlManager = SQLManager.getInstance();
-    CloudManager cloudManager = CloudManager.getInstance();
-
     EditText titleText;
     EditText textText;
 
@@ -87,11 +84,10 @@ public class AddPlanActivity extends BaseTempActivity {
     }
 
     void insertPlan(String title, String text, Date plan, int type, int repeat) {
-        long id = sqlManager.insertPlan(title, text, plan, type, repeat);
+        long id = SQLManager.getInstance().insertPlan(title, text, plan, type, repeat);
         if (id >= 0) {
             showToast("添加成功");
-            cloudManager.setContext(this);
-            cloudManager.insertPlan(id, title, text, plan, type, repeat);
+            CloudManager.getInstance().insertPlan(id, title, text, plan, type, repeat);
             finish();
         } else {
             showToast("添加失败");

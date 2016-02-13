@@ -48,7 +48,6 @@ public class MainActivity extends BaseNavigationActivity {
 
     TabHost tabHost;
 
-    SQLManager sqlManager = SQLManager.getInstance();
     int version = 0;
 
     private class TimerHandler extends Handler {
@@ -122,6 +121,7 @@ public class MainActivity extends BaseNavigationActivity {
     void updatePlanList() {
         boolean changeFlag = false;
 
+        SQLManager sqlManager = SQLManager.getInstance();
         if (sqlManager.getVersion() != version) {
             version = sqlManager.getVersion();
 
