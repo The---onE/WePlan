@@ -306,7 +306,9 @@ public class CloudManager {
                             long planTime = plan.getLong("planTime");
                             int type = plan.getInt("type");
                             int repeat = plan.getInt("repeat");
-                            sqlManager.insertPlan(id, title, text, actualTime, planTime, type, repeat);
+                            int status = plan.getInt("status");
+                            sqlManager.insertPlan(id, title, text, actualTime, planTime,
+                                    type, repeat, status);
                         }
                         showToast("云同步完成");
                     }
