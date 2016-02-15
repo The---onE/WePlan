@@ -104,6 +104,8 @@ public class SQLManager {
         }
         String clear = "delete from PLAN";
         database.execSQL(clear);
+        String zero = "delete from sqlite_sequence where NAME = 'PLAN'";
+        database.execSQL(zero);
 
         version++;
         return true;

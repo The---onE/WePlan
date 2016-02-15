@@ -292,6 +292,7 @@ public class CloudManager {
     public void setPlansToSQL(AVObject user) {
         final AVQuery<AVObject> query = new AVQuery<>("PlanList");
         query.whereEqualTo("user", user.get("username"));
+        query.whereEqualTo("status", user.get("0"));
         query.findInBackground(new FindCallback<AVObject>() {
             public void done(List<AVObject> avObjects, AVException e) {
                 if (e == null) {
