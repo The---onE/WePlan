@@ -38,7 +38,8 @@ public class CloudManager {
         mContext = context;
     }
 
-    public void insertPlan(final long id, final String title, final String text, final Date date, final int type, final int repeat) {
+    public void insertPlan(final long id, final String title, final String text, final Date date,
+                           final int type, final int repeat, final int period) {
         UserManager.getInstance().checkLogin(new AutoLoginCallback() {
             @Override
             public void success(AVObject user) {
@@ -50,6 +51,7 @@ public class CloudManager {
                 post.put("actualTime", date.getTime());
                 post.put("planTime", date.getTime());
                 post.put("type", type);
+                post.put("period", period);
                 post.put("repeat", repeat);
                 post.put("status", 0);
                 post.put("user", user.get("username"));

@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TabHost;
 
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
@@ -23,6 +26,7 @@ public class AddPlanActivity extends BaseTempActivity {
     RadioButton repeatOnce;
 
     CheckBox dailyCheck;
+    CheckBox periodCheck;
 
     EditText yearText;
     EditText monthText;
@@ -53,6 +57,18 @@ public class AddPlanActivity extends BaseTempActivity {
         repeatOnce = getViewById(R.id.repeat_once);
 
         dailyCheck = getViewById(R.id.daily);
+        periodCheck = getViewById(R.id.period);
+        periodCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                LinearLayout period = getViewById(R.id.period_time);
+                if (isChecked) {
+                    period.setVisibility(View.VISIBLE);
+                } else {
+                    period.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
 
         yearText = getViewById(R.id.year);
         monthText = getViewById(R.id.month);
@@ -81,13 +97,14 @@ public class AddPlanActivity extends BaseTempActivity {
 
         tabHost.addTab(tabHost.newTabSpec("time").setIndicator("定时").setContent(R.id.tab_time));
         tabHost.addTab(tabHost.newTabSpec("delay").setIndicator("倒计时").setContent(R.id.tab_delay));
+
     }
 
-    void insertPlan(String title, String text, Date plan, int type, int repeat) {
-        long id = SQLManager.getInstance().insertPlan(title, text, plan, type, repeat);
+    void insertPlan(String title, String text, Date plan, int type, int repeat, int period) {
+        long id = SQLManager.getInstance().insertPlan(title, text, plan, type, repeat, period);
         if (id >= 0) {
             showToast("添加成功");
-            CloudManager.getInstance().insertPlan(id, title, text, plan, type, repeat);
+            CloudManager.getInstance().insertPlan(id, title, text, plan, type, repeat, period);
             finish();
         } else {
             showToast("添加失败");
@@ -179,12 +196,30 @@ public class AddPlanActivity extends BaseTempActivity {
                     }
 
                     boolean dailyFlag = dailyCheck.isChecked();
+                    boolean periodFlag = periodCheck.isChecked();
                     int type = SQLManager.GENERAL_TYPE;
                     if (dailyFlag) {
+                        if (periodFlag) {
+                            showToast("不能同时为每日和周期计划");
+                            return;
+                        }
                         type = SQLManager.DAILY_TYPE;
                     }
 
-                    insertPlan(title, text, plan, type, repeat);
+                    int period = 0;
+                    if (periodFlag) {
+                        type = SQLManager.PERIOD_TYPE;
+                        EditText periodHourText = getViewById(R.id.period_hour);
+                        int periodHour = Integer.valueOf(periodHourText.getText().toString());
+                        EditText periodMinuteText = getViewById(R.id.period_minute);
+                        int periodMinute = Integer.valueOf(periodMinuteText.getText().toString());
+                        EditText periodSecondText = getViewById(R.id.period_second);
+                        int periodSecond = Integer.valueOf(periodSecondText.getText().toString());
+
+                        period = (periodSecond + periodMinute * 60 + periodHour * 60 * 60) * 1000;
+                    }
+
+                    insertPlan(title, text, plan, type, repeat, period);
                 } else {
                     showToast("请输入将来的时间");
                 }
@@ -243,12 +278,30 @@ public class AddPlanActivity extends BaseTempActivity {
                 }
 
                 boolean dailyFlag = dailyCheck.isChecked();
+                boolean periodFlag = periodCheck.isChecked();
                 int type = SQLManager.GENERAL_TYPE;
                 if (dailyFlag) {
+                    if (periodFlag) {
+                        showToast("不能同时为每日和周期计划");
+                        return;
+                    }
                     type = SQLManager.DAILY_TYPE;
                 }
 
-                insertPlan(title, text, plan, type, repeat);
+                int period = 0;
+                if (periodFlag) {
+                    type = SQLManager.PERIOD_TYPE;
+                    EditText periodHourText = getViewById(R.id.period_hour);
+                    int periodHour = Integer.valueOf(periodHourText.getText().toString());
+                    EditText periodMinuteText = getViewById(R.id.period_minute);
+                    int periodMinute = Integer.valueOf(periodMinuteText.getText().toString());
+                    EditText periodSecondText = getViewById(R.id.period_second);
+                    int periodSecond = Integer.valueOf(periodSecondText.getText().toString());
+
+                    period = (periodSecond + periodMinute * 60 + periodHour * 60 * 60) * 1000;
+                }
+
+                insertPlan(title, text, plan, type, repeat, period);
             }
         });
 

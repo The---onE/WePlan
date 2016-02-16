@@ -17,6 +17,7 @@ public class SQLManager {
 
     public static final int GENERAL_TYPE = 0;
     public static final int DAILY_TYPE = 1;
+    public static final int PERIOD_TYPE = 2;
 
     static final long DAY_TIME = 1000 * 60 * 60 * 24;
 
@@ -58,8 +59,12 @@ public class SQLManager {
         return c.getInt(6);
     }
 
-    public static int getRepeat(Cursor c) {
+    public static int getPeriod(Cursor c) {
         return c.getInt(7);
+    }
+
+    public static int getRepeat(Cursor c) {
+        return c.getInt(8);
     }
 
     private boolean openDatabase() {
@@ -84,6 +89,7 @@ public class SQLManager {
                     "STATUS integer default(0), " +
                     "PLAN_TIME integer not null default(0), " +
                     "TYPE integer default(0), " +
+                    "PERIOD integer default(0), " +
                     "REPEAT integer default(-1)" +
                     ")";
             database.execSQL(createPlanSQL);
@@ -111,7 +117,7 @@ public class SQLManager {
         return true;
     }
 
-    public long insertPlan(String title, String text, Date date, int type, int repeat) {
+    public long insertPlan(String title, String text, Date date, int type, int repeat, int period) {
         if (!checkDatabase()) {
             return -1;
         }
@@ -121,6 +127,7 @@ public class SQLManager {
         content.put("ACTUAL_TIME", date.getTime());
         content.put("PLAN_TIME", date.getTime());
         content.put("TYPE", type);
+        content.put("PERIOD", period);
         content.put("REPEAT", repeat);
         content.put("STATUS", 0);
 
@@ -184,6 +191,16 @@ public class SQLManager {
                     delta = -DAY_TIME;
                 }
                 newTime += (delta / DAY_TIME + 1) * DAY_TIME;
+
+                int repeat = getRepeat(c);
+                if (repeat < 0) {
+                    update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
+                } else {
+                    update = "update PLAN set ACTUAL_TIME = " + newTime + ", REPEAT = 1 where ID = " + id;
+                }
+            } else if (type == PERIOD_TYPE) {
+                long now = System.currentTimeMillis();
+                long newTime = now + getPeriod(c);
 
                 int repeat = getRepeat(c);
                 if (repeat < 0) {
