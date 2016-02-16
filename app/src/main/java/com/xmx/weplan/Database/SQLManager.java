@@ -139,7 +139,7 @@ public class SQLManager {
     }
 
     public long insertPlan(long id, String title, String text, long actualTime,
-                           long planTime, int type, int repeat, int status) {
+                           long planTime, int type, int repeat, int status, int period) {
         if (!checkDatabase()) {
             return -1;
         }
@@ -150,6 +150,7 @@ public class SQLManager {
         content.put("ACTUAL_TIME", actualTime);
         content.put("PLAN_TIME", planTime);
         content.put("TYPE", type);
+        content.put("PERIOD", period);
         content.put("REPEAT", repeat);
         content.put("STATUS", status);
 

@@ -22,6 +22,7 @@ public class CloudManager {
 
     public static final int GENERAL_TYPE = 0;
     public static final int DAILY_TYPE = 1;
+    public static final int PERIOD_TYPE = 2;
 
     static final long DAY_TIME = 1000 * 60 * 60 * 24;
 
@@ -177,6 +178,17 @@ public class CloudManager {
                                         plan.put("actualTime", newTime);
                                         plan.put("repeat", 1);
                                     }
+                                } else if (type == PERIOD_TYPE) {
+                                    long now = System.currentTimeMillis();
+                                    long newTime = now + plan.getInt("period");
+
+                                    int repeat = plan.getInt("repeat");
+                                    if (repeat < 0) {
+                                        plan.put("actualTime", newTime);
+                                    } else {
+                                        plan.put("actualTime", newTime);
+                                        plan.put("repeat", 1);
+                                    }
                                 } else {
                                     plan.put("status", 1);
                                 }
@@ -294,7 +306,7 @@ public class CloudManager {
     public void setPlansToSQL(AVObject user) {
         final AVQuery<AVObject> query = new AVQuery<>("PlanList");
         query.whereEqualTo("user", user.get("username"));
-        query.whereEqualTo("status", user.get("0"));
+        query.whereEqualTo("status", 0);
         query.findInBackground(new FindCallback<AVObject>() {
             public void done(List<AVObject> avObjects, AVException e) {
                 if (e == null) {
@@ -310,8 +322,9 @@ public class CloudManager {
                             int type = plan.getInt("type");
                             int repeat = plan.getInt("repeat");
                             int status = plan.getInt("status");
+                            int period = plan.getInt("period");
                             sqlManager.insertPlan(id, title, text, actualTime, planTime,
-                                    type, repeat, status);
+                                    type, repeat, status, period);
                         }
                         showToast("云同步完成");
                     }

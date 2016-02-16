@@ -30,7 +30,7 @@ public class InformationActivity extends BaseTempActivity {
                 @Override
                 public void onClick(View v) {
                     if (SQLManager.getInstance().completePlan(id)) {
-                        SQLManager.getInstance().completePlan(id);
+                        CloudManager.getInstance().completePlan(id);
                     }
                     finish();
                 }
