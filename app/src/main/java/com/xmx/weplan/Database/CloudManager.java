@@ -213,6 +213,17 @@ public class CloudManager {
                     plan.put("actualTime", newTime);
                     plan.put("repeat", 1);
                 }
+
+                plan.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(AVException e) {
+                        if (e == null) {
+                            showToast("云同步成功");
+                        } else {
+                            showToast("云同步失败");
+                        }
+                    }
+                });
             }
         };
 
@@ -229,6 +240,17 @@ public class CloudManager {
                     plan.put("actualTime", newTime);
                     plan.put("repeat", 1);
                 }
+
+                plan.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(AVException e) {
+                        if (e == null) {
+                            showToast("云同步成功");
+                        } else {
+                            showToast("云同步失败");
+                        }
+                    }
+                });
             }
         };
 
