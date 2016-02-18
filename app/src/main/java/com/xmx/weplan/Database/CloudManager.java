@@ -20,6 +20,67 @@ import java.util.List;
 public class CloudManager {
     private static CloudManager instance;
 
+    public abstract class FindPlan {
+        Context mContext;
+
+        FindPlan(Context context) {
+            mContext = context;
+        }
+
+        protected void showToast(String str) {
+            Toast.makeText(mContext, str, Toast.LENGTH_SHORT).show();
+        }
+
+        public void exec(final int id) {
+            UserManager.getInstance().checkLogin(new AutoLoginCallback() {
+                @Override
+                public void success(final AVObject user) {
+                    final AVQuery<AVObject> query = new AVQuery<>("PlanList");
+                    query.whereEqualTo("user", user.get("username"));
+                    query.whereEqualTo("sql_id", id);
+                    query.findInBackground(new FindCallback<AVObject>() {
+                        public void done(List<AVObject> avObjects, AVException e) {
+                            if (e == null) {
+                                if (avObjects.size() > 0) {
+                                    final AVObject plan = avObjects.get(0);
+
+                                    found(user, plan);
+                                } else {
+                                    showToast("云同步失败");
+                                }
+                            } else {
+                                showToast("云同步失败");
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void notLoggedIn() {
+                    showToast("请登录");
+                }
+
+                @Override
+                public void errorNetwork() {
+                    showToast("网络连接失败");
+                }
+
+                @Override
+                public void errorUsername() {
+                    showToast("请登录");
+                }
+
+                @Override
+                public void errorChecksum() {
+                    showToast("请重新登录");
+                }
+            });
+        }
+
+        public abstract void found(AVObject user, AVObject plan);
+    }
+
+
     public static final int GENERAL_TYPE = 0;
     public static final int DAILY_TYPE = 1;
     public static final int PERIOD_TYPE = 2;
@@ -148,159 +209,89 @@ public class CloudManager {
     }
 
     public void completePlan(final int id) {
-        UserManager.getInstance().checkLogin(new AutoLoginCallback() {
+        FindPlan findplan = new FindPlan(mContext) {
             @Override
-            public void success(AVObject user) {
-                final AVQuery<AVObject> query = new AVQuery<>("PlanList");
-                query.whereEqualTo("user", user.get("username"));
-                query.whereEqualTo("sql_id", id);
-                query.findInBackground(new FindCallback<AVObject>() {
-                    public void done(List<AVObject> avObjects, AVException e) {
+            public void found(AVObject user, AVObject plan) {
+                int type = plan.getInt("type");
+                if (type == DAILY_TYPE) {
+                    long planTime = plan.getLong("planTime");
+                    long now = System.currentTimeMillis();
+                    long newTime = planTime;
+                    long delta = now - planTime;
+                    if (delta < 0) {
+                        delta = -DAY_TIME;
+                    }
+                    newTime += (delta / DAY_TIME + 1) * DAY_TIME;
+
+                    int repeat = plan.getInt("repeat");
+                    if (repeat < 0) {
+                        plan.put("actualTime", newTime);
+                    } else {
+                        plan.put("actualTime", newTime);
+                        plan.put("repeat", 1);
+                    }
+                } else if (type == PERIOD_TYPE) {
+                    long now = System.currentTimeMillis();
+                    long newTime = now + plan.getInt("period");
+
+                    int repeat = plan.getInt("repeat");
+                    if (repeat < 0) {
+                        plan.put("actualTime", newTime);
+                    } else {
+                        plan.put("actualTime", newTime);
+                        plan.put("repeat", 1);
+                    }
+                } else {
+                    plan.put("status", 1);
+                }
+
+                plan.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(AVException e) {
                         if (e == null) {
-                            if (avObjects.size() > 0) {
-                                final AVObject plan = avObjects.get(0);
-
-                                int type = plan.getInt("type");
-                                if (type == DAILY_TYPE) {
-                                    long planTime = plan.getLong("planTime");
-                                    long now = System.currentTimeMillis();
-                                    long newTime = planTime;
-                                    long delta = now - planTime;
-                                    if (delta < 0) {
-                                        delta = -DAY_TIME;
-                                    }
-                                    newTime += (delta / DAY_TIME + 1) * DAY_TIME;
-
-                                    int repeat = plan.getInt("repeat");
-                                    if (repeat < 0) {
-                                        plan.put("actualTime", newTime);
-                                    } else {
-                                        plan.put("actualTime", newTime);
-                                        plan.put("repeat", 1);
-                                    }
-                                } else if (type == PERIOD_TYPE) {
-                                    long now = System.currentTimeMillis();
-                                    long newTime = now + plan.getInt("period");
-
-                                    int repeat = plan.getInt("repeat");
-                                    if (repeat < 0) {
-                                        plan.put("actualTime", newTime);
-                                    } else {
-                                        plan.put("actualTime", newTime);
-                                        plan.put("repeat", 1);
-                                    }
-                                } else {
-                                    plan.put("status", 1);
-                                }
-
-                                plan.saveInBackground(new SaveCallback() {
-                                    @Override
-                                    public void done(AVException e) {
-                                        if (e == null) {
-                                            showToast("云同步成功");
-                                        } else {
-                                            showToast("云同步失败");
-                                        }
-                                    }
-                                });
-                            } else {
-                                showToast("云同步失败");
-                            }
+                            showToast("云同步成功");
                         } else {
                             showToast("云同步失败");
                         }
                     }
                 });
             }
+        };
 
-            @Override
-            public void notLoggedIn() {
-                showToast("请登录");
-            }
-
-            @Override
-            public void errorNetwork() {
-                showToast("网络连接失败");
-            }
-
-            @Override
-            public void errorUsername() {
-                showToast("请登录");
-            }
-
-            @Override
-            public void errorChecksum() {
-                showToast("请重新登录");
-            }
-        });
+        findplan.exec(id);
     }
 
     public void delayPlan(final int id, final long newTime) {
-        UserManager.getInstance().checkLogin(new AutoLoginCallback() {
+        FindPlan findPlan = new FindPlan(mContext) {
             @Override
-            public void success(AVObject user) {
-                final AVQuery<AVObject> query = new AVQuery<>("PlanList");
-                query.whereEqualTo("user", user.get("username"));
-                query.whereEqualTo("sql_id", id);
-                query.findInBackground(new FindCallback<AVObject>() {
-                    public void done(List<AVObject> avObjects, AVException e) {
+            public void found(AVObject user, AVObject plan) {
+                int repeat = plan.getInt("repeat");
+                if (repeat < 0) {
+                    plan.put("actualTime", newTime);
+                } else {
+                    repeat--;
+                    if (repeat <= 0) {
+                        completePlan(id);
+                    } else {
+                        plan.put("actualTime", newTime);
+                        plan.put("repeat", repeat);
+                    }
+                }
+
+                plan.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(AVException e) {
                         if (e == null) {
-                            if (avObjects.size() > 0) {
-                                final AVObject plan = avObjects.get(0);
-
-                                int repeat = plan.getInt("repeat");
-                                if (repeat < 0) {
-                                    plan.put("actualTime", newTime);
-                                } else {
-                                    repeat--;
-                                    if (repeat <= 0) {
-                                        completePlan(id);
-                                    } else {
-                                        plan.put("actualTime", newTime);
-                                        plan.put("repeat", repeat);
-                                    }
-                                }
-
-                                plan.saveInBackground(new SaveCallback() {
-                                    @Override
-                                    public void done(AVException e) {
-                                        if (e == null) {
-                                            showToast("云同步成功");
-                                        } else {
-                                            showToast("云同步失败");
-                                        }
-                                    }
-                                });
-                            } else {
-                                showToast("云同步失败");
-                            }
+                            showToast("云同步成功");
                         } else {
                             showToast("云同步失败");
                         }
                     }
                 });
             }
+        };
 
-            @Override
-            public void notLoggedIn() {
-                showToast("请登录");
-            }
-
-            @Override
-            public void errorNetwork() {
-                showToast("网络连接失败");
-            }
-
-            @Override
-            public void errorUsername() {
-                showToast("请登录");
-            }
-
-            @Override
-            public void errorChecksum() {
-                showToast("请重新登录");
-            }
-        });
+        findPlan.exec(id);
     }
 
     public void setPlansToSQL(AVObject user) {
