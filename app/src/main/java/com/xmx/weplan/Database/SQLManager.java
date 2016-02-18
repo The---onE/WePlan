@@ -132,6 +132,7 @@ public class SQLManager {
         content.put("STATUS", 0);
 
         long id = database.insert("PLAN", null, content);
+        CloudManager.getInstance().insertPlan(id, title, text, date, type, repeat, period);
 
         version++;
 
@@ -172,6 +173,7 @@ public class SQLManager {
         String update = "update PLAN set STATUS = 1 where ID = " + id;
         database.execSQL(update);
 
+        CloudManager.getInstance().cancelPlan(id);
         version++;
     }
 
@@ -183,40 +185,57 @@ public class SQLManager {
         if (c.moveToFirst()) {
             String update;
             int type = getType(c);
-            if (type == DAILY_TYPE) {
-                long planTime = getPlanTime(c);
-                long now = System.currentTimeMillis();
-                long newTime = planTime;
-                long delta = now - planTime;
-                if (delta < 0) {
-                    delta = -DAY_TIME;
-                }
-                newTime += (delta / DAY_TIME + 1) * DAY_TIME;
+            switch (type) {
+                case GENERAL_TYPE: {
+                    update = "update PLAN set STATUS = 1 where ID = " + id;
 
-                int repeat = getRepeat(c);
-                if (repeat < 0) {
-                    update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
-                } else {
-                    update = "update PLAN set ACTUAL_TIME = " + newTime + ", REPEAT = 1 where ID = " + id;
+                    CloudManager.getInstance().completeGeneralPlan(id);
                 }
 
-                CloudManager.getInstance().completeDailyPlan(id, newTime, repeat);
-            } else if (type == PERIOD_TYPE) {
-                long now = System.currentTimeMillis();
-                long newTime = now + getPeriod(c);
+                break;
+                case DAILY_TYPE: {
+                    long planTime = getPlanTime(c);
+                    long now = System.currentTimeMillis();
+                    long newTime = planTime;
+                    long delta = now - planTime;
+                    if (delta < 0) {
+                        delta = -DAY_TIME;
+                    }
+                    newTime += (delta / DAY_TIME + 1) * DAY_TIME;
 
-                int repeat = getRepeat(c);
-                if (repeat < 0) {
-                    update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
-                } else {
-                    update = "update PLAN set ACTUAL_TIME = " + newTime + ", REPEAT = 1 where ID = " + id;
+                    int repeat = getRepeat(c);
+                    if (repeat < 0) {
+                        update = "update PLAN set ACTUAL_TIME = " + newTime +
+                                ", PLAN_TIME = " + newTime + " where ID = " + id;
+                    } else {
+                        update = "update PLAN set ACTUAL_TIME = " + newTime +
+                                ", PLAN_TIME = " + newTime + ", REPEAT = 1 where ID = " + id;
+                    }
+
+                    CloudManager.getInstance().completeDailyPlan(id, newTime, repeat);
                 }
+                break;
 
-                CloudManager.getInstance().completePeriodPlan(id, newTime, repeat);
-            } else {
-                update = "update PLAN set STATUS = 1 where ID = " + id;
+                case PERIOD_TYPE: {
+                    long now = System.currentTimeMillis();
+                    long newTime = now + getPeriod(c);
 
-                CloudManager.getInstance().completeGeneralPlan(id);
+                    int repeat = getRepeat(c);
+                    if (repeat < 0) {
+                        update = "update PLAN set ACTUAL_TIME = " + newTime +
+                                ", PLAN_TIME = " + newTime + " where ID = " + id;
+                    } else {
+                        update = "update PLAN set ACTUAL_TIME = " + newTime +
+                                ", PLAN_TIME = " + newTime + ", REPEAT = 1 where ID = " + id;
+                    }
+
+                    CloudManager.getInstance().completePeriodPlan(id, newTime, repeat);
+                }
+                break;
+
+                default:
+                    update = "";
+                    break;
             }
             database.execSQL(update);
 

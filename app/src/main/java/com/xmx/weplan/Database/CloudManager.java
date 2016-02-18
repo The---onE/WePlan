@@ -80,8 +80,6 @@ public class CloudManager {
         public abstract void found(AVObject user, AVObject plan);
     }
 
-    static final long DAY_TIME = 1000 * 60 * 60 * 24;
-
     Context mContext;
 
     public synchronized static CloudManager getInstance() {

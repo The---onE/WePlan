@@ -43,7 +43,6 @@ public class InformationActivity extends BaseTempActivity {
                 @Override
                 public void onClick(View v) {
                     SQLManager.getInstance().cancelPlan(id);
-                    CloudManager.getInstance().cancelPlan(id);
                     finish();
                 }
             });
