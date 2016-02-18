@@ -80,11 +80,6 @@ public class CloudManager {
         public abstract void found(AVObject user, AVObject plan);
     }
 
-
-    public static final int GENERAL_TYPE = 0;
-    public static final int DAILY_TYPE = 1;
-    public static final int PERIOD_TYPE = 2;
-
     static final long DAY_TIME = 1000 * 60 * 60 * 24;
 
     Context mContext;
@@ -208,42 +203,43 @@ public class CloudManager {
         });
     }
 
-    public void completePlan(final int id) {
+    public void completeDailyPlan(final int id, final long newTime, final int repeat) {
         FindPlan findplan = new FindPlan(mContext) {
             @Override
             public void found(AVObject user, AVObject plan) {
-                int type = plan.getInt("type");
-                if (type == DAILY_TYPE) {
-                    long planTime = plan.getLong("planTime");
-                    long now = System.currentTimeMillis();
-                    long newTime = planTime;
-                    long delta = now - planTime;
-                    if (delta < 0) {
-                        delta = -DAY_TIME;
-                    }
-                    newTime += (delta / DAY_TIME + 1) * DAY_TIME;
-
-                    int repeat = plan.getInt("repeat");
-                    if (repeat < 0) {
-                        plan.put("actualTime", newTime);
-                    } else {
-                        plan.put("actualTime", newTime);
-                        plan.put("repeat", 1);
-                    }
-                } else if (type == PERIOD_TYPE) {
-                    long now = System.currentTimeMillis();
-                    long newTime = now + plan.getInt("period");
-
-                    int repeat = plan.getInt("repeat");
-                    if (repeat < 0) {
-                        plan.put("actualTime", newTime);
-                    } else {
-                        plan.put("actualTime", newTime);
-                        plan.put("repeat", 1);
-                    }
+                if (repeat < 0) {
+                    plan.put("actualTime", newTime);
                 } else {
-                    plan.put("status", 1);
+                    plan.put("actualTime", newTime);
+                    plan.put("repeat", 1);
                 }
+            }
+        };
+
+        findplan.exec(id);
+    }
+
+    public void completePeriodPlan(final int id, final long newTime, final int repeat) {
+        FindPlan findplan = new FindPlan(mContext) {
+            @Override
+            public void found(AVObject user, AVObject plan) {
+                if (repeat < 0) {
+                    plan.put("actualTime", newTime);
+                } else {
+                    plan.put("actualTime", newTime);
+                    plan.put("repeat", 1);
+                }
+            }
+        };
+
+        findplan.exec(id);
+    }
+
+    public void completeGeneralPlan(final int id) {
+        FindPlan findplan = new FindPlan(mContext) {
+            @Override
+            public void found(AVObject user, AVObject plan) {
+                plan.put("status", 1);
 
                 plan.saveInBackground(new SaveCallback() {
                     @Override
@@ -261,22 +257,12 @@ public class CloudManager {
         findplan.exec(id);
     }
 
-    public void delayPlan(final int id, final long newTime) {
+    public void delayPlan(final int id, final long newTime, final int repeat) {
         FindPlan findPlan = new FindPlan(mContext) {
             @Override
             public void found(AVObject user, AVObject plan) {
-                int repeat = plan.getInt("repeat");
-                if (repeat < 0) {
-                    plan.put("actualTime", newTime);
-                } else {
-                    repeat--;
-                    if (repeat <= 0) {
-                        completePlan(id);
-                    } else {
-                        plan.put("actualTime", newTime);
-                        plan.put("repeat", repeat);
-                    }
-                }
+                plan.put("actualTime", newTime);
+                plan.put("repeat", repeat);
 
                 plan.saveInBackground(new SaveCallback() {
                     @Override

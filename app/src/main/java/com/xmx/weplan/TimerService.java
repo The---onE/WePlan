@@ -74,9 +74,7 @@ public class TimerService extends Service {
                     showRemindNotification(latestId, latestTitle, now - latestPlanTime);
                 }
                 long time = now + DELAY_TIME;
-                if (sqlManager.delayPlan(latestId, time)) {
-                    CloudManager.getInstance().delayPlan(latestId, time);
-                }
+                sqlManager.delayPlan(latestId, time);
                 return true;
             } else {
                 return false;

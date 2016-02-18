@@ -20,9 +20,7 @@ public class NotificationTempActivity extends Activity {
         int id = getIntent().getIntExtra("id", -1);
         String title = getIntent().getStringExtra("title");
         if (flag) {
-            if (SQLManager.getInstance().completePlan(id)) {
-                CloudManager.getInstance().completePlan(id);
-            }
+            SQLManager.getInstance().completePlan(id);
         }
 
         int notificationId = (title + "|" + id).hashCode();

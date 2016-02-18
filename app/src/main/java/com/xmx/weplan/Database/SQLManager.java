@@ -199,6 +199,8 @@ public class SQLManager {
                 } else {
                     update = "update PLAN set ACTUAL_TIME = " + newTime + ", REPEAT = 1 where ID = " + id;
                 }
+
+                CloudManager.getInstance().completeDailyPlan(id, newTime, repeat);
             } else if (type == PERIOD_TYPE) {
                 long now = System.currentTimeMillis();
                 long newTime = now + getPeriod(c);
@@ -209,8 +211,12 @@ public class SQLManager {
                 } else {
                     update = "update PLAN set ACTUAL_TIME = " + newTime + ", REPEAT = 1 where ID = " + id;
                 }
+
+                CloudManager.getInstance().completePeriodPlan(id, newTime, repeat);
             } else {
                 update = "update PLAN set STATUS = 1 where ID = " + id;
+
+                CloudManager.getInstance().completeGeneralPlan(id);
             }
             database.execSQL(update);
 
@@ -231,15 +237,17 @@ public class SQLManager {
             int repeat = getRepeat(c);
             if (repeat < 0) {
                 update = "update PLAN set ACTUAL_TIME = " + newTime + " where ID = " + id;
+
+                CloudManager.getInstance().delayPlan(id, newTime, repeat);
             } else {
                 repeat--;
                 if (repeat <= 0) {
-                    if (completePlan(id)) {
-                        CloudManager.getInstance().completePlan(id);
-                    }
+                    completePlan(id);
                     return false;
                 } else {
                     update = "update PLAN set ACTUAL_TIME = " + newTime + ", REPEAT = " + repeat + " where ID = " + id;
+
+                    CloudManager.getInstance().delayPlan(id, newTime, repeat);
                 }
             }
             database.execSQL(update);
