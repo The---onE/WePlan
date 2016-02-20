@@ -19,6 +19,11 @@ public class PlanAdapter extends BaseAdapter {
     Context mContext;
     List<Plan> mPlans;
 
+    static final long DAY_TIME = 60 * 60 * 24 * 1000;
+    static final long HOUR_TIME = 60 * 60 * 1000;
+    static final long MINUTE_TIME = 60 * 1000;
+    static final long SECOND_TIME = 1000;
+
     public PlanAdapter(Context context, List<Plan> plans) {
         mContext = context;
         mPlans = plans;
@@ -55,6 +60,7 @@ public class PlanAdapter extends BaseAdapter {
 
         TextView remind;
         TextView daily;
+        TextView period;
     }
 
     @Override
@@ -68,6 +74,7 @@ public class PlanAdapter extends BaseAdapter {
             holder.before = (TextView) convertView.findViewById(R.id.item_before);
             holder.remind = (TextView) convertView.findViewById(R.id.remind_tag);
             holder.daily = (TextView) convertView.findViewById(R.id.daily_tag);
+            holder.period = (TextView) convertView.findViewById(R.id.period_tag);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -91,6 +98,28 @@ public class PlanAdapter extends BaseAdapter {
                 holder.daily.setVisibility(View.VISIBLE);
             } else {
                 holder.daily.setVisibility(View.INVISIBLE);
+            }
+
+            int period = mPlans.get(position).getPeriod();
+            if (period <= 0) {
+                holder.period.setVisibility(View.INVISIBLE);
+            } else {
+                String periodString = "周期";
+                if (period / DAY_TIME > 0) {
+                    long day = period / DAY_TIME;
+                    periodString = "" + day + "天";
+                } else if (period / HOUR_TIME > 0) {
+                    long hour = period / HOUR_TIME;
+                    periodString = "" + hour + "小时";
+                } else if (period / MINUTE_TIME > 0) {
+                    long minute = period / MINUTE_TIME;
+                    periodString = "" + minute + "分钟";
+                } else if (period / SECOND_TIME > 0) {
+                    long second = period / SECOND_TIME;
+                    periodString = "" + second + "秒";
+                }
+                holder.period.setText(periodString);
+                holder.period.setVisibility(View.VISIBLE);
             }
         } else {
             holder.title.setText("加载失败");

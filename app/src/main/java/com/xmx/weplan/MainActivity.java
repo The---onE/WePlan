@@ -146,7 +146,9 @@ public class MainActivity extends BaseNavigationActivity {
                     }
                     long time = SQLManager.getActualTime(c);
 
-                    Plan p = new Plan(id, title, time, remindFlag, dailyFlag);
+                    int period = SQLManager.getPeriod(c);
+
+                    Plan p = new Plan(id, title, time, remindFlag, dailyFlag, period);
                     plans.add(p);
                 } while (c.moveToNext());
             }

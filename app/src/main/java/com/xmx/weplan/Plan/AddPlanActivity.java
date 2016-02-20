@@ -19,6 +19,8 @@ import com.xmx.weplan.R;
 import java.util.Date;
 
 public class AddPlanActivity extends BaseTempActivity {
+    final static int minPeriod = 10 * 1000;
+
     EditText titleText;
     EditText textText;
 
@@ -216,6 +218,10 @@ public class AddPlanActivity extends BaseTempActivity {
                         int periodSecond = Integer.valueOf(periodSecondText.getText().toString());
 
                         period = (periodSecond + periodMinute * 60 + periodHour * 60 * 60) * 1000;
+                        if (period <= minPeriod) {
+                            showToast("周期太小");
+                            return;
+                        }
                     }
 
                     insertPlan(title, text, plan, type, repeat, period);

@@ -17,8 +17,9 @@ public class Plan {
 
     boolean mRemindFlag;
     boolean mDailyFlag;
+    int mPeriod;
 
-    public Plan(int id, String title, long time, boolean remindFlag, boolean dailyFlag) {
+    public Plan(int id, String title, long time, boolean remindFlag, boolean dailyFlag, int period) {
         mId = id;
         mTitle = title;
 
@@ -29,6 +30,8 @@ public class Plan {
 
         mRemindFlag = remindFlag;
         mDailyFlag = dailyFlag;
+        mPeriod = period;
+
     }
 
     public int getId() {
@@ -69,5 +72,9 @@ public class Plan {
 
     public boolean isRemindFlag() {
         return mRemindFlag;
+    }
+
+    public int getPeriod() {
+        return mPeriod;
     }
 }
