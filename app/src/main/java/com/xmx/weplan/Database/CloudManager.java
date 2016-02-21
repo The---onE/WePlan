@@ -112,10 +112,14 @@ public class CloudManager {
                 post.put("user", user.get("username"));
                 post.put("timestamp", System.currentTimeMillis() / 1000);
 
+                final long version = System.currentTimeMillis();
+                post.put("version", version);
+
                 post.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(AVException e) {
                         if (e == null) {
+                            DataManager.getInstance().setVersion(version);
                             showToast("云保存成功");
                         } else {
                             e.printStackTrace();
@@ -159,10 +163,15 @@ public class CloudManager {
                             if (avObjects.size() > 0) {
                                 final AVObject plan = avObjects.get(0);
                                 plan.put("status", 1);
+
+                                final long version = System.currentTimeMillis();
+                                plan.put("version", version);
+
                                 plan.saveInBackground(new SaveCallback() {
                                     @Override
                                     public void done(AVException e) {
                                         if (e == null) {
+                                            DataManager.getInstance().setVersion(version);
                                             showToast("云同步成功");
                                         } else {
                                             showToast("云同步失败");
@@ -212,10 +221,14 @@ public class CloudManager {
                     plan.put("repeat", 1);
                 }
 
+                final long version = System.currentTimeMillis();
+                plan.put("version", version);
+
                 plan.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(AVException e) {
                         if (e == null) {
+                            DataManager.getInstance().setVersion(version);
                             showToast("云同步成功");
                         } else {
                             showToast("云同步失败");
@@ -239,10 +252,14 @@ public class CloudManager {
                     plan.put("repeat", 1);
                 }
 
+                final long version = System.currentTimeMillis();
+                plan.put("version", version);
+
                 plan.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(AVException e) {
                         if (e == null) {
+                            DataManager.getInstance().setVersion(version);
                             showToast("云同步成功");
                         } else {
                             showToast("云同步失败");
@@ -261,10 +278,14 @@ public class CloudManager {
             public void found(AVObject user, AVObject plan) {
                 plan.put("status", 1);
 
+                final long version = System.currentTimeMillis();
+                plan.put("version", version);
+
                 plan.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(AVException e) {
                         if (e == null) {
+                            DataManager.getInstance().setVersion(version);
                             showToast("云同步成功");
                         } else {
                             showToast("云同步失败");
@@ -284,10 +305,14 @@ public class CloudManager {
                 plan.put("actualTime", newTime);
                 plan.put("repeat", repeat);
 
+                final long version = System.currentTimeMillis();
+                plan.put("version", version);
+
                 plan.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(AVException e) {
                         if (e == null) {
+                            DataManager.getInstance().setVersion(version);
                             showToast("云同步成功");
                         } else {
                             showToast("云同步失败");
@@ -300,30 +325,54 @@ public class CloudManager {
         findPlan.exec(id);
     }
 
-    public void setPlansToSQL(AVObject user) {
-        final AVQuery<AVObject> query = new AVQuery<>("PlanList");
-        query.whereEqualTo("user", user.get("username"));
-        query.whereEqualTo("status", 0);
-        query.findInBackground(new FindCallback<AVObject>() {
-            public void done(List<AVObject> avObjects, AVException e) {
+    public void setPlansToSQL(final AVObject user) {
+        final AVQuery<AVObject> check = new AVQuery<>("PlanList");
+        check.whereEqualTo("user", user.get("username"));
+        check.orderByDescending("version");
+        check.setLimit(1);
+        check.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
                 if (e == null) {
-                    if (avObjects.size() > 0) {
-                        SQLManager sqlManager = SQLManager.getInstance();
-                        sqlManager.clearDatabase();
-                        for (AVObject plan : avObjects) {
-                            long id = plan.getLong("sql_id");
-                            String title = plan.getString("title");
-                            String text = plan.getString("text");
-                            long actualTime = plan.getLong("actualTime");
-                            long planTime = plan.getLong("planTime");
-                            int type = plan.getInt("type");
-                            int repeat = plan.getInt("repeat");
-                            int status = plan.getInt("status");
-                            int period = plan.getInt("period");
-                            sqlManager.insertPlan(id, title, text, actualTime, planTime,
-                                    type, repeat, status, period);
+                    if (list.size() > 0) {
+                        AVObject p = list.get(0);
+                        final long version = p.getLong("version");
+                        if (version == DataManager.getInstance().getVersion()) {
+                            showToast("云同步完成");
+                        } else {
+                            final AVQuery<AVObject> query = new AVQuery<>("PlanList");
+                            query.whereEqualTo("user", user.get("username"));
+                            query.whereEqualTo("status", 0);
+                            query.findInBackground(new FindCallback<AVObject>() {
+                                public void done(List<AVObject> avObjects, AVException e) {
+                                    if (e == null) {
+                                        if (avObjects.size() > 0) {
+                                            SQLManager sqlManager = SQLManager.getInstance();
+                                            sqlManager.clearDatabase();
+                                            for (AVObject plan : avObjects) {
+                                                long id = plan.getLong("sql_id");
+                                                String title = plan.getString("title");
+                                                String text = plan.getString("text");
+                                                long actualTime = plan.getLong("actualTime");
+                                                long planTime = plan.getLong("planTime");
+                                                int type = plan.getInt("type");
+                                                int repeat = plan.getInt("repeat");
+                                                int status = plan.getInt("status");
+                                                int period = plan.getInt("period");
+                                                sqlManager.insertPlan(id, title, text, actualTime, planTime,
+                                                        type, repeat, status, period);
+                                            }
+                                            DataManager.getInstance().setVersion(version);
+                                            showToast("已同步至最新");
+                                        }
+                                    } else {
+                                        showToast("云同步失败");
+                                    }
+                                }
+                            });
                         }
-                        showToast("云同步完成");
+                    } else {
+                        showToast("添加你的计划吧");
                     }
                 } else {
                     showToast("云同步失败");

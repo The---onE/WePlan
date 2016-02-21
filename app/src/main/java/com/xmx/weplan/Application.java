@@ -2,6 +2,7 @@ package com.xmx.weplan;
 
 import com.avos.avoscloud.AVOSCloud;
 import com.xmx.weplan.Database.CloudManager;
+import com.xmx.weplan.Database.DataManager;
 import com.xmx.weplan.User.UserManager;
 
 /**
@@ -17,6 +18,7 @@ public class Application extends android.app.Application {
         //PushService.setDefaultPushCallback(this, ReceiveMessageActivity.class);
         //PushService.subscribe(this, "systemmessage", ReceiveMessageActivity.class);
         //AVInstallation.getCurrentInstallation().saveInBackground();
+        DataManager.getInstance().setContext(this);
         CloudManager.getInstance().setContext(this);
         UserManager.getInstance().setContext(this);
     }
