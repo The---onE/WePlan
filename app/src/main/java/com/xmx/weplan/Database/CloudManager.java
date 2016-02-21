@@ -372,6 +372,7 @@ public class CloudManager {
                             });
                         }
                     } else {
+                        SQLManager.getInstance().clearDatabase();
                         showToast("添加你的计划吧");
                     }
                 } else {
