@@ -102,6 +102,14 @@ public class AddPlanActivity extends BaseTempActivity {
 
     }
 
+    int getEditViewInt(EditText et) {
+        if (!et.getText().toString().equals("")) {
+            return Integer.valueOf(et.getText().toString());
+        } else {
+            return 0;
+        }
+    }
+
     void insertPlan(String title, String text, Date date, int type, int repeat, int period) {
         long id = SQLManager.getInstance().insertPlan(title, text, date, type, repeat, period);
         if (id >= 0) {
@@ -112,16 +120,57 @@ public class AddPlanActivity extends BaseTempActivity {
         }
     }
 
+    void insertPlan(Date plan) {
+        if (titleText.getText().toString().equals("")) {
+            showToast("请输入标题");
+            return;
+        }
+        String title = titleText.getText().toString();
+        String text = textText.getText().toString();
+
+        int repeat = -1;
+        if (repeatOnce.isChecked()) {
+            repeat = 1;
+        }
+
+        boolean dailyFlag = dailyCheck.isChecked();
+        boolean periodFlag = periodCheck.isChecked();
+        int type = SQLManager.GENERAL_TYPE;
+        if (dailyFlag) {
+            if (periodFlag) {
+                showToast("不能同时为每日和周期计划");
+                return;
+            }
+            type = SQLManager.DAILY_TYPE;
+        }
+
+        int period = 0;
+        if (periodFlag) {
+            type = SQLManager.PERIOD_TYPE;
+            EditText periodHourText = getViewById(R.id.period_hour);
+            int periodHour = Integer.valueOf(periodHourText.getText().toString());
+            EditText periodMinuteText = getViewById(R.id.period_minute);
+            int periodMinute = Integer.valueOf(periodMinuteText.getText().toString());
+            EditText periodSecondText = getViewById(R.id.period_second);
+            int periodSecond = Integer.valueOf(periodSecondText.getText().toString());
+
+            period = (periodSecond + periodMinute * 60 + periodHour * 60 * 60) * 1000;
+            if (period <= minPeriod) {
+                showToast("周期太小");
+                return;
+            }
+        }
+
+        insertPlan(title, text, plan, type, repeat, period);
+    }
+
     @Override
     protected void setListener() {
         Button timeOk = getViewById(R.id.time_ok);
         timeOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (titleText.getText().toString().equals("")) {
-                    showToast("请输入标题");
-                    return;
-                } else if (yearText.getText().toString().equals("")) {
+                if (yearText.getText().toString().equals("")) {
                     showToast("请输入年份");
                     return;
                 } else if (monthText.getText().toString().equals("")) {
@@ -142,12 +191,12 @@ public class AddPlanActivity extends BaseTempActivity {
                 }
 
                 Date plan = new Date(System.currentTimeMillis());
-                int year = Integer.valueOf(yearText.getText().toString());
-                int month = Integer.valueOf(monthText.getText().toString());
-                int day = Integer.valueOf(dayText.getText().toString());
-                int hour = Integer.valueOf(hourText.getText().toString());
-                int minute = Integer.valueOf(minuteText.getText().toString());
-                int second = Integer.valueOf(secondText.getText().toString());
+                int year = getEditViewInt(yearText);
+                int month = getEditViewInt(monthText);
+                int day = getEditViewInt(dayText);
+                int hour = getEditViewInt(hourText);
+                int minute = getEditViewInt(minuteText);
+                int second = getEditViewInt(secondText);
                 if (year <= 2099) {
                     plan.setYear(year - 1900);
                 } else {
@@ -188,43 +237,7 @@ public class AddPlanActivity extends BaseTempActivity {
 
                 long now = System.currentTimeMillis();
                 if (plan.getTime() > now) {
-                    String title = titleText.getText().toString();
-                    String text = textText.getText().toString();
-
-                    int repeat = -1;
-                    if (repeatOnce.isChecked()) {
-                        repeat = 1;
-                    }
-
-                    boolean dailyFlag = dailyCheck.isChecked();
-                    boolean periodFlag = periodCheck.isChecked();
-                    int type = SQLManager.GENERAL_TYPE;
-                    if (dailyFlag) {
-                        if (periodFlag) {
-                            showToast("不能同时为每日和周期计划");
-                            return;
-                        }
-                        type = SQLManager.DAILY_TYPE;
-                    }
-
-                    int period = 0;
-                    if (periodFlag) {
-                        type = SQLManager.PERIOD_TYPE;
-                        EditText periodHourText = getViewById(R.id.period_hour);
-                        int periodHour = Integer.valueOf(periodHourText.getText().toString());
-                        EditText periodMinuteText = getViewById(R.id.period_minute);
-                        int periodMinute = Integer.valueOf(periodMinuteText.getText().toString());
-                        EditText periodSecondText = getViewById(R.id.period_second);
-                        int periodSecond = Integer.valueOf(periodSecondText.getText().toString());
-
-                        period = (periodSecond + periodMinute * 60 + periodHour * 60 * 60) * 1000;
-                        if (period <= minPeriod) {
-                            showToast("周期太小");
-                            return;
-                        }
-                    }
-
-                    insertPlan(title, text, plan, type, repeat, period);
+                    insertPlan(plan);
                 } else {
                     showToast("请输入将来的时间");
                 }
@@ -235,36 +248,12 @@ public class AddPlanActivity extends BaseTempActivity {
         delayOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (titleText.getText().toString().equals("")) {
-                    showToast("请输入标题");
-                    return;
-                }
-
-                if (delayYearText.getText().toString().equals("")) {
-                    delayYearText.setText("0");
-                }
-                if (delayMonthText.getText().toString().equals("")) {
-                    delayMonthText.setText("0");
-                }
-                if (delayDayText.getText().toString().equals("")) {
-                    delayDayText.setText("0");
-                }
-                if (delayHourText.getText().toString().equals("")) {
-                    delayHourText.setText("0");
-                }
-                if (delayMinuteText.getText().toString().equals("")) {
-                    delayMinuteText.setText("0");
-                }
-                if (delaySecondText.getText().toString().equals("")) {
-                    delaySecondText.setText("0");
-                }
-
-                int year = Integer.valueOf(delayYearText.getText().toString());
-                int month = Integer.valueOf(delayMonthText.getText().toString());
-                int day = Integer.valueOf(delayDayText.getText().toString());
-                int hour = Integer.valueOf(delayHourText.getText().toString());
-                int minute = Integer.valueOf(delayMinuteText.getText().toString());
-                int second = Integer.valueOf(delaySecondText.getText().toString());
+                int year = getEditViewInt(delayYearText);
+                int month = getEditViewInt(delayMonthText);
+                int day = getEditViewInt(delayDayText);
+                int hour = getEditViewInt(delayHourText);
+                int minute = getEditViewInt(delayMinuteText);
+                int second = getEditViewInt(delaySecondText);
 
                 Date plan = new Date(System.currentTimeMillis());
                 plan.setYear(plan.getYear() + year);
@@ -274,43 +263,7 @@ public class AddPlanActivity extends BaseTempActivity {
                 plan.setMinutes(plan.getMinutes() + minute);
                 plan.setSeconds(plan.getSeconds() + second);
 
-                String title = titleText.getText().toString();
-                String text = textText.getText().toString();
-
-                int repeat = -1;
-                if (repeatOnce.isChecked()) {
-                    repeat = 1;
-                }
-
-                boolean dailyFlag = dailyCheck.isChecked();
-                boolean periodFlag = periodCheck.isChecked();
-                int type = SQLManager.GENERAL_TYPE;
-                if (dailyFlag) {
-                    if (periodFlag) {
-                        showToast("不能同时为每日和周期计划");
-                        return;
-                    }
-                    type = SQLManager.DAILY_TYPE;
-                }
-
-                int period = 0;
-                if (periodFlag) {
-                    type = SQLManager.PERIOD_TYPE;
-                    EditText periodHourText = getViewById(R.id.period_hour);
-                    int periodHour = Integer.valueOf(periodHourText.getText().toString());
-                    EditText periodMinuteText = getViewById(R.id.period_minute);
-                    int periodMinute = Integer.valueOf(periodMinuteText.getText().toString());
-                    EditText periodSecondText = getViewById(R.id.period_second);
-                    int periodSecond = Integer.valueOf(periodSecondText.getText().toString());
-
-                    period = (periodSecond + periodMinute * 60 + periodHour * 60 * 60) * 1000;
-                    if (period <= minPeriod) {
-                        showToast("周期太小");
-                        return;
-                    }
-                }
-
-                insertPlan(title, text, plan, type, repeat, period);
+                insertPlan(plan);
             }
         });
 
