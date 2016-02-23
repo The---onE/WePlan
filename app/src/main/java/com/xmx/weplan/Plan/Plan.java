@@ -10,6 +10,7 @@ import java.util.Date;
 public class Plan {
     int mId;
     String mTitle;
+    String mText;
     long mTime;
     String mTimeString;
     long mBefore;
@@ -19,9 +20,10 @@ public class Plan {
     boolean mDailyFlag;
     int mPeriod;
 
-    public Plan(int id, String title, long time, boolean remindFlag, boolean dailyFlag, int period) {
+    public Plan(int id, String title, String text, long time, boolean remindFlag, boolean dailyFlag, int period) {
         mId = id;
         mTitle = title;
+        mText = text;
 
         mTime = time;
         Date date = new Date(time);
@@ -31,7 +33,6 @@ public class Plan {
         mRemindFlag = remindFlag;
         mDailyFlag = dailyFlag;
         mPeriod = period;
-
     }
 
     public int getId() {
@@ -40,6 +41,10 @@ public class Plan {
 
     public String getTitle() {
         return mTitle;
+    }
+
+    public String getText() {
+        return mText;
     }
 
     public long getTime() {

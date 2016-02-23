@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
-import android.widget.TextView;
 
 import com.avos.avoscloud.AVObject;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
@@ -131,6 +130,7 @@ public class MainActivity extends BaseNavigationActivity {
                 do {
                     int id = SQLManager.getId(c);
                     String title = SQLManager.getTitle(c);
+                    String text = SQLManager.getText(c);
 
                     boolean remindFlag = false;
                     boolean dailyFlag = false;
@@ -148,7 +148,7 @@ public class MainActivity extends BaseNavigationActivity {
 
                     int period = SQLManager.getPeriod(c);
 
-                    Plan p = new Plan(id, title, time, remindFlag, dailyFlag, period);
+                    Plan p = new Plan(id, title, text,  time, remindFlag, dailyFlag, period);
                     plans.add(p);
                 } while (c.moveToNext());
             }
@@ -227,6 +227,11 @@ public class MainActivity extends BaseNavigationActivity {
                 Plan plan = plans.get(position);
                 intent.putExtra("id", plan.getId());
                 intent.putExtra("title", plan.getTitle());
+                intent.putExtra("text", plan.getText());
+                intent.putExtra("time", plan.getTimeString());
+                intent.putExtra("remind", plan.isRemindFlag());
+                intent.putExtra("daily", plan.isDailyFlag());
+                intent.putExtra("period", plan.getPeriod());
                 startActivity(intent);
             }
         });

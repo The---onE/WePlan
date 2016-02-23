@@ -47,6 +47,10 @@ public class SQLManager {
         return c.getString(1);
     }
 
+    public static String getText(Cursor c) {
+        return c.getString(2);
+    }
+
     public static long getActualTime(Cursor c) {
         return c.getLong(3);
     }
