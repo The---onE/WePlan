@@ -59,19 +59,25 @@ public class InformationActivity extends BaseTempActivity {
         if (period <= 0) {
             periodView.setVisibility(View.INVISIBLE);
         } else {
-            String periodString = "周期";
+            String periodString = "";
             if (period / DAY_TIME > 0) {
                 long day = period / DAY_TIME;
-                periodString = "" + day + "天";
-            } else if (period / HOUR_TIME > 0) {
+                periodString += day + "天";
+                period %= DAY_TIME;
+            }
+            if (period / HOUR_TIME > 0) {
                 long hour = period / HOUR_TIME;
-                periodString = "" + hour + "小时";
-            } else if (period / MINUTE_TIME > 0) {
+                periodString += +hour + "小时";
+                period %= HOUR_TIME;
+            }
+            if (period / MINUTE_TIME > 0) {
                 long minute = period / MINUTE_TIME;
-                periodString = "" + minute + "分钟";
-            } else if (period / SECOND_TIME > 0) {
+                periodString += +minute + "分钟";
+                period %= MINUTE_TIME;
+            }
+            if (period / SECOND_TIME > 0) {
                 long second = period / SECOND_TIME;
-                periodString = "" + second + "秒";
+                periodString += +second + "秒";
             }
             periodView.setText(periodString);
             periodView.setVisibility(View.VISIBLE);

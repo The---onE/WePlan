@@ -65,6 +65,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="#37B158"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:singleLine="true"
                         android:text="周期"
                         android:visibility="invisible" />
                 </LinearLayout>
