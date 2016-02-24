@@ -8,19 +8,16 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TabHost;
 
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
-import com.xmx.weplan.Database.CloudManager;
+import com.xmx.weplan.Constants;
 import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
 import java.util.Date;
 
 public class AddPlanActivity extends BaseTempActivity {
-    final static int minPeriod = 10 * 1000;
-
     EditText titleText;
     EditText textText;
 
@@ -45,8 +42,6 @@ public class AddPlanActivity extends BaseTempActivity {
     EditText delaySecondText;
 
     TabHost tabHost;
-
-    final static int[] DaysOfMonth = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -135,18 +130,18 @@ public class AddPlanActivity extends BaseTempActivity {
 
         boolean dailyFlag = dailyCheck.isChecked();
         boolean periodFlag = periodCheck.isChecked();
-        int type = SQLManager.GENERAL_TYPE;
+        int type = Constants.GENERAL_TYPE;
         if (dailyFlag) {
             if (periodFlag) {
                 showToast("不能同时为每日和周期计划");
                 return;
             }
-            type = SQLManager.DAILY_TYPE;
+            type = Constants.DAILY_TYPE;
         }
 
         int period = 0;
         if (periodFlag) {
-            type = SQLManager.PERIOD_TYPE;
+            type = Constants.PERIOD_TYPE;
             EditText periodHourText = getViewById(R.id.period_hour);
             int periodHour = Integer.valueOf(periodHourText.getText().toString());
             EditText periodMinuteText = getViewById(R.id.period_minute);
@@ -155,7 +150,7 @@ public class AddPlanActivity extends BaseTempActivity {
             int periodSecond = Integer.valueOf(periodSecondText.getText().toString());
 
             period = (periodSecond + periodMinute * 60 + periodHour * 60 * 60) * 1000;
-            if (period <= minPeriod) {
+            if (period <= Constants.MIN_PERIOD) {
                 showToast("周期太小");
                 return;
             }
@@ -209,7 +204,7 @@ public class AddPlanActivity extends BaseTempActivity {
                     showToast("月份格式不正确");
                     return;
                 }
-                if (1 <= day && day <= DaysOfMonth[month - 1]) {
+                if (1 <= day && day <= Constants.DAYS_OF_MONTH[month - 1]) {
                     plan.setDate(day);
                 } else {
                     showToast("日期格式不正确");

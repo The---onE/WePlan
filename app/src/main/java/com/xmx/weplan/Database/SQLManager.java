@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.xmx.weplan.Constants;
+
 import java.io.File;
 import java.util.Date;
 import java.util.Random;
@@ -14,12 +16,6 @@ import java.util.Random;
  */
 public class SQLManager {
     private static SQLManager instance;
-
-    public static final int GENERAL_TYPE = 0;
-    public static final int DAILY_TYPE = 1;
-    public static final int PERIOD_TYPE = 2;
-
-    static final long DAY_TIME = 1000 * 60 * 60 * 24;
 
     SQLiteDatabase database = null;
     int version = new Random().nextInt();
@@ -190,22 +186,22 @@ public class SQLManager {
             String update;
             int type = getType(c);
             switch (type) {
-                case GENERAL_TYPE: {
+                case Constants.GENERAL_TYPE: {
                     update = "update PLAN set STATUS = 1 where ID = " + id;
 
                     CloudManager.getInstance().completeGeneralPlan(id);
                 }
 
                 break;
-                case DAILY_TYPE: {
+                case Constants.DAILY_TYPE: {
                     long planTime = getPlanTime(c);
                     long now = System.currentTimeMillis();
                     long newTime = planTime;
                     long delta = now - planTime;
                     if (delta < 0) {
-                        delta = -DAY_TIME;
+                        delta = -Constants.DAY_TIME;
                     }
-                    newTime += (delta / DAY_TIME + 1) * DAY_TIME;
+                    newTime += (delta / Constants.DAY_TIME + 1) * Constants.DAY_TIME;
 
                     int repeat = getRepeat(c);
                     if (repeat < 0) {
@@ -220,7 +216,7 @@ public class SQLManager {
                 }
                 break;
 
-                case PERIOD_TYPE: {
+                case Constants.PERIOD_TYPE: {
                     long now = System.currentTimeMillis();
                     long newTime = now + getPeriod(c);
 

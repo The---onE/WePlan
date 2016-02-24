@@ -6,17 +6,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
-import com.xmx.weplan.Database.CloudManager;
+import com.xmx.weplan.Constants;
 import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
 public class InformationActivity extends BaseTempActivity {
     int id;
-
-    static final long DAY_TIME = 60 * 60 * 24 * 1000;
-    static final long HOUR_TIME = 60 * 60 * 1000;
-    static final long MINUTE_TIME = 60 * 1000;
-    static final long SECOND_TIME = 1000;
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -60,23 +55,23 @@ public class InformationActivity extends BaseTempActivity {
             periodView.setVisibility(View.INVISIBLE);
         } else {
             String periodString = "";
-            if (period / DAY_TIME > 0) {
-                long day = period / DAY_TIME;
+            if (period / Constants.DAY_TIME > 0) {
+                long day = period / Constants.DAY_TIME;
                 periodString += day + "天";
-                period %= DAY_TIME;
+                period %= Constants.DAY_TIME;
             }
-            if (period / HOUR_TIME > 0) {
-                long hour = period / HOUR_TIME;
+            if (period / Constants.HOUR_TIME > 0) {
+                long hour = period / Constants.HOUR_TIME;
                 periodString += +hour + "小时";
-                period %= HOUR_TIME;
+                period %= Constants.HOUR_TIME;
             }
-            if (period / MINUTE_TIME > 0) {
-                long minute = period / MINUTE_TIME;
+            if (period / Constants.MINUTE_TIME > 0) {
+                long minute = period / Constants.MINUTE_TIME;
                 periodString += +minute + "分钟";
-                period %= MINUTE_TIME;
+                period %= Constants.MINUTE_TIME;
             }
-            if (period / SECOND_TIME > 0) {
-                long second = period / SECOND_TIME;
+            if (period / Constants.SECOND_TIME > 0) {
+                long second = period / Constants.  SECOND_TIME;
                 periodString += +second + "秒";
             }
             periodView.setText(periodString);

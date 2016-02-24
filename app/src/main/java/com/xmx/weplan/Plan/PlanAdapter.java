@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.xmx.weplan.Constants;
 import com.xmx.weplan.R;
 
 import java.util.List;
@@ -18,11 +19,6 @@ import java.util.List;
 public class PlanAdapter extends BaseAdapter {
     Context mContext;
     List<Plan> mPlans;
-
-    static final long DAY_TIME = 60 * 60 * 24 * 1000;
-    static final long HOUR_TIME = 60 * 60 * 1000;
-    static final long MINUTE_TIME = 60 * 1000;
-    static final long SECOND_TIME = 1000;
 
     public PlanAdapter(Context context, List<Plan> plans) {
         mContext = context;
@@ -105,17 +101,17 @@ public class PlanAdapter extends BaseAdapter {
                 holder.period.setVisibility(View.INVISIBLE);
             } else {
                 String periodString = "周期";
-                if (period / DAY_TIME > 0) {
-                    long day = period / DAY_TIME;
+                if (period / Constants.DAY_TIME > 0) {
+                    long day = period / Constants.DAY_TIME;
                     periodString = "" + day + "天";
-                } else if (period / HOUR_TIME > 0) {
-                    long hour = period / HOUR_TIME;
+                } else if (period / Constants.HOUR_TIME > 0) {
+                    long hour = period / Constants.HOUR_TIME;
                     periodString = "" + hour + "小时";
-                } else if (period / MINUTE_TIME > 0) {
-                    long minute = period / MINUTE_TIME;
+                } else if (period / Constants.MINUTE_TIME > 0) {
+                    long minute = period / Constants.MINUTE_TIME;
                     periodString = "" + minute + "分钟";
-                } else if (period / SECOND_TIME > 0) {
-                    long second = period / SECOND_TIME;
+                } else if (period / Constants.SECOND_TIME > 0) {
+                    long second = period / Constants.SECOND_TIME;
                     periodString = "" + second + "秒";
                 }
                 holder.period.setText(periodString);
