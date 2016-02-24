@@ -6,21 +6,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.xmx.weplan.Constants;
 import com.xmx.weplan.Database.PlanManager;
+import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
 import java.util.List;
 
 /**
- * Created by The_onE on 2016/1/30.
+ * Created by The_onE on 2016/2/25.
  */
-public class PlanAdapter extends BaseAdapter {
+public class PlanCardAdapter extends BaseAdapter {
     Context mContext;
 
-    public PlanAdapter(Context context) {
+    public PlanCardAdapter(Context context) {
         mContext = context;
     }
 
@@ -50,25 +52,30 @@ public class PlanAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView title;
         TextView time;
-        TextView before;
+        TextView text;
 
         TextView remind;
         TextView daily;
         TextView period;
+
+        Button complete;
+        Button cancel;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_plan, null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.item_plan_card, null);
             holder = new ViewHolder();
-            holder.title = (TextView) convertView.findViewById(R.id.item_title);
-            holder.time = (TextView) convertView.findViewById(R.id.item_time);
-            holder.before = (TextView) convertView.findViewById(R.id.item_before);
-            holder.remind = (TextView) convertView.findViewById(R.id.remind_tag);
-            holder.daily = (TextView) convertView.findViewById(R.id.daily_tag);
-            holder.period = (TextView) convertView.findViewById(R.id.period_tag);
+            holder.title = (TextView) convertView.findViewById(R.id.card_title);
+            holder.time = (TextView) convertView.findViewById(R.id.card_time);
+            holder.text = (TextView) convertView.findViewById(R.id.card_text);
+            holder.remind = (TextView) convertView.findViewById(R.id.card_remind_tag);
+            holder.daily = (TextView) convertView.findViewById(R.id.card_daily_tag);
+            holder.period = (TextView) convertView.findViewById(R.id.card_period_tag);
+            holder.complete = (Button) convertView.findViewById(R.id.card_complete);
+            holder.cancel = (Button) convertView.findViewById(R.id.card_cancel);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -78,11 +85,8 @@ public class PlanAdapter extends BaseAdapter {
         if (position < plans.size()) {
             Plan plan = plans.get(position);
             holder.title.setText(plan.getTitle());
-            holder.title.setTextColor(Color.BLACK);
-
             holder.time.setText(plan.getTimeString());
-
-            holder.before.setText(plan.getBeforeString());
+            holder.text.setText(plan.getText());
 
             if (plan.isRemindFlag()) {
                 holder.remind.setVisibility(View.VISIBLE);
@@ -100,26 +104,48 @@ public class PlanAdapter extends BaseAdapter {
             if (period <= 0) {
                 holder.period.setVisibility(View.INVISIBLE);
             } else {
-                String periodString = "周期";
+                String periodString = "";
                 if (period / Constants.DAY_TIME > 0) {
                     long day = period / Constants.DAY_TIME;
-                    periodString = "" + day + "天";
-                } else if (period / Constants.HOUR_TIME > 0) {
+                    periodString += day + "天";
+                    period %= Constants.DAY_TIME;
+                }
+                if (period / Constants.HOUR_TIME > 0) {
                     long hour = period / Constants.HOUR_TIME;
-                    periodString = "" + hour + "小时";
-                } else if (period / Constants.MINUTE_TIME > 0) {
+                    periodString += +hour + "小时";
+                    period %= Constants.HOUR_TIME;
+                }
+                if (period / Constants.MINUTE_TIME > 0) {
                     long minute = period / Constants.MINUTE_TIME;
-                    periodString = "" + minute + "分钟";
-                } else if (period / Constants.SECOND_TIME > 0) {
+                    periodString += +minute + "分钟";
+                    period %= Constants.MINUTE_TIME;
+                }
+                if (period / Constants.SECOND_TIME > 0) {
                     long second = period / Constants.SECOND_TIME;
-                    periodString = "" + second + "秒";
+                    periodString += +second + "秒";
                 }
                 holder.period.setText(periodString);
                 holder.period.setVisibility(View.VISIBLE);
             }
+
+            final int id = plan.getId();
+            if (id > 0) {
+                holder.complete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        SQLManager.getInstance().completePlan(id);
+                    }
+                });
+
+                holder.cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        SQLManager.getInstance().cancelPlan(id);
+                    }
+                });
+            }
         } else {
             holder.title.setText("加载失败");
-            holder.time.setText("");
         }
 
         return convertView;
