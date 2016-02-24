@@ -1,7 +1,6 @@
 package com.xmx.weplan.Plan;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +45,7 @@ public class PlanCardAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return PlanManager.getInstance().getPlans().get(position).getId();
     }
 
     static class ViewHolder {
@@ -134,6 +133,8 @@ public class PlanCardAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         SQLManager.getInstance().completePlan(id);
+                        PlanManager.getInstance().updatePlans();
+                        changeList();
                     }
                 });
 
@@ -141,6 +142,8 @@ public class PlanCardAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         SQLManager.getInstance().cancelPlan(id);
+                        PlanManager.getInstance().updatePlans();
+                        changeList();
                     }
                 });
             }

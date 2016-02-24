@@ -22,6 +22,14 @@ public class InformationActivity extends BaseTempActivity {
         ListView planList = getViewById(R.id.list_plan_card);
         PlanCardAdapter adapter = new PlanCardAdapter(this);
         planList.setAdapter(adapter);
+
+        int id = getIntent().getIntExtra("id", -1);
+        for (int i = 0; i < adapter.getCount(); ++i) {
+            if (adapter.getItemId(i) == id) {
+                planList.setSelection(i);
+                break;
+            }
+        }
     }
 
     @Override
