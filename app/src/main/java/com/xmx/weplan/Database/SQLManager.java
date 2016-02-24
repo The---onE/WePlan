@@ -198,7 +198,7 @@ public class SQLManager {
                     long now = System.currentTimeMillis();
                     long newTime = planTime;
                     long delta = now - planTime;
-                    if (delta < 0) {
+                    if (delta < -Constants.EARLIER_TIME) {
                         delta = -Constants.DAY_TIME;
                     }
                     newTime += (delta / Constants.DAY_TIME + 1) * Constants.DAY_TIME;

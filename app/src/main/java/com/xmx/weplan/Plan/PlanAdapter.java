@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.xmx.weplan.Constants;
+import com.xmx.weplan.Database.PlanManager;
 import com.xmx.weplan.R;
 
 import java.util.List;
@@ -20,13 +21,13 @@ public class PlanAdapter extends BaseAdapter {
     Context mContext;
     List<Plan> mPlans;
 
-    public PlanAdapter(Context context, List<Plan> plans) {
+    public PlanAdapter(Context context) {
         mContext = context;
-        mPlans = plans;
+        mPlans = PlanManager.getInstance().getPlans();
     }
 
-    public void changeList(List<Plan> plans) {
-        mPlans = plans;
+    public void changeList() {
+        mPlans = PlanManager.getInstance().getPlans();
         notifyDataSetChanged();
     }
 

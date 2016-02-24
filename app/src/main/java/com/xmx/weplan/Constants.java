@@ -20,6 +20,8 @@ public class Constants {
     public static final int DAILY_TYPE = 1;
     public static final int PERIOD_TYPE = 2;
 
+    public static final int EARLIER_TIME = 3 * 1000;
+
     public static final int MIN_PERIOD = 10 * 1000;
 
     public static final int[] NUM_DRAWABLE = {R.drawable._0, R.drawable._1, R.drawable._2, R.drawable._3, R.drawable._4,
