@@ -39,6 +39,8 @@ public class MainActivity extends BaseNavigationActivity {
 
     TabHost tabHost;
 
+    long version = 0;
+
     private class TimerHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -108,8 +110,10 @@ public class MainActivity extends BaseNavigationActivity {
     }
 
     void updatePlanList() {
-        if (PlanManager.getInstance().updatePlans()) {
+        long ver = PlanManager.getInstance().updatePlans();
+        if (ver != version) {
             adapter.changeList();
+            version = ver;
         }
     }
 
@@ -148,12 +152,6 @@ public class MainActivity extends BaseNavigationActivity {
                 Intent intent = new Intent(getBaseContext(), InformationActivity.class);
                 Plan plan = (Plan) adapter.getItem(position);
                 intent.putExtra("id", plan.getId());
-                intent.putExtra("title", plan.getTitle());
-                intent.putExtra("text", plan.getText());
-                intent.putExtra("time", plan.getTimeString());
-                intent.putExtra("remind", plan.isRemindFlag());
-                intent.putExtra("daily", plan.isDailyFlag());
-                intent.putExtra("period", plan.getPeriod());
                 startActivity(intent);
             }
         });

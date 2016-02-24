@@ -7,6 +7,7 @@ import com.xmx.weplan.Plan.Plan;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by The_onE on 2016/2/24.
@@ -14,7 +15,8 @@ import java.util.List;
 public class PlanManager {
     private static PlanManager instance;
 
-    int version = 0;
+    long sqlVersion = 0;
+    long version = System.currentTimeMillis();
     List<Plan> plans = new ArrayList<>();
 
     public synchronized static PlanManager getInstance() {
@@ -28,12 +30,12 @@ public class PlanManager {
         return plans;
     }
 
-    public boolean updatePlans() {
+    public long updatePlans() {
         boolean changeFlag = false;
 
         SQLManager sqlManager = SQLManager.getInstance();
-        if (sqlManager.getVersion() != version) {
-            version = sqlManager.getVersion();
+        if (sqlManager.getVersion() != sqlVersion) {
+            sqlVersion = sqlManager.getVersion();
 
             Cursor c = sqlManager.selectFuturePlan();
             plans.clear();
@@ -97,6 +99,9 @@ public class PlanManager {
             }
         }
 
-        return changeFlag;
+        if (changeFlag) {
+            version++;
+        }
+        return version;
     }
 }

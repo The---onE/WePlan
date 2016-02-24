@@ -18,7 +18,7 @@ import com.xmx.weplan.Plan.InformationActivity;
 import com.xmx.weplan.Plan.NotificationTempActivity;
 
 public class TimerService extends Service {
-    int version = 0;
+    long version = 0;
 
     int latestId;
     String latestTitle;
@@ -117,7 +117,6 @@ public class TimerService extends Service {
 
         Intent intent = new Intent(this, InformationActivity.class);
         intent.putExtra("id", id);
-        intent.putExtra("title", title);
         PendingIntent contentIntent = PendingIntent.getActivity(this, notificationId,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
 

@@ -18,7 +18,7 @@ public class SQLManager {
     private static SQLManager instance;
 
     SQLiteDatabase database = null;
-    int version = new Random().nextInt();
+    long version = System.currentTimeMillis();
 
     public synchronized static SQLManager getInstance() {
         if (null == instance) {
@@ -31,7 +31,7 @@ public class SQLManager {
         openDatabase();
     }
 
-    public int getVersion() {
+    public long getVersion() {
         return version;
     }
 
