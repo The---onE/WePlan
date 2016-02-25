@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.baoyz.swipemenulistview.SwipeMenuListView
+            <com.yydcdut.sdlv.SlideAndDragListView
                 android:id="@+id/list_plan_card"
                 style="@style/MatchAuto" />
 

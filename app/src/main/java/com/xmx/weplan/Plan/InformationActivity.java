@@ -5,15 +5,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
 
-import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuCreator;
-import com.baoyz.swipemenulistview.SwipeMenuItem;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
 import com.xmx.weplan.Database.PlanManager;
 import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
+import com.yydcdut.sdlv.Menu;
+import com.yydcdut.sdlv.MenuItem;
+import com.yydcdut.sdlv.SlideAndDragListView;
 
 import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
@@ -22,7 +22,7 @@ import cn.bingoogolapple.refreshlayout.BGARefreshViewHolder;
 public class InformationActivity extends BaseTempActivity
         implements BGARefreshLayout.BGARefreshLayoutDelegate {
 
-    SwipeMenuListView planList;
+    SlideAndDragListView planList;
     PlanCardAdapter adapter;
     BGARefreshLayout mRefreshLayout;
 
@@ -45,54 +45,24 @@ public class InformationActivity extends BaseTempActivity
         setTitle("计划");
 
         planList = getViewById(R.id.list_plan_card);
+
+        Menu menu = new Menu(new ColorDrawable(Color.WHITE), true, 0);
+        menu.addItem(new MenuItem.Builder().setWidth(200)
+                .setBackground(new ColorDrawable(Color.RED))
+                .setDirection(MenuItem.DIRECTION_RIGHT)
+                .setIcon(getResources().getDrawable(android.R.drawable.ic_menu_delete))
+                .build());
+        menu.addItem(new MenuItem.Builder().setWidth(300)
+                .setBackground(new ColorDrawable(Color.GRAY))
+                .setText("开始啦")
+                .setDirection(MenuItem.DIRECTION_RIGHT)
+                .setTextColor(Color.WHITE)
+                .setTextSize(20)
+                .build());
+        planList.setMenu(menu);
+
         adapter = new PlanCardAdapter(this);
         planList.setAdapter(adapter);
-
-        SwipeMenuCreator creator = new SwipeMenuCreator() {
-
-            @Override
-            public void create(SwipeMenu menu) {
-                SwipeMenuItem completeItem = new SwipeMenuItem(getApplicationContext());
-                completeItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9, 0xCE)));
-                completeItem.setWidth(300);
-                completeItem.setTitle("开始啦");
-                completeItem.setTitleSize(20);
-                completeItem.setTitleColor(Color.WHITE);
-                menu.addMenuItem(completeItem);
-
-                SwipeMenuItem cancelItem = new SwipeMenuItem(getApplicationContext());
-                cancelItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
-                cancelItem.setWidth(200);
-                cancelItem.setIcon(android.R.drawable.ic_menu_delete);
-                menu.addMenuItem(cancelItem);
-            }
-        };
-
-        planList.setMenuCreator(creator);
-
-        planList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                Plan plan = (Plan) adapter.getItem(position);
-                int id = plan.getId();
-                switch (index) {
-                    case 0: //Complete
-                        SQLManager.getInstance().completePlan(id);
-                        PlanManager.getInstance().updatePlans();
-                        adapter.changeList();
-                        break;
-                    case 1: //Cancel
-                        SQLManager.getInstance().cancelPlan(id);
-                        PlanManager.getInstance().updatePlans();
-                        adapter.changeList();
-                        break;
-                }
-                // false : close the menu; true : not close the menu
-                return false;
-            }
-        });
-
-        planList.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
 
         initRefreshLayout();
     }
@@ -125,6 +95,48 @@ public class InformationActivity extends BaseTempActivity
 
     @Override
     protected void setListener() {
+
+        planList.setOnSlideListener(new SlideAndDragListView.OnSlideListener() {
+            @Override
+            public void onSlideOpen(View view, View parentView, int position, int direction) {
+
+            }
+
+            @Override
+            public void onSlideClose(View view, View parentView, int position, int direction) {
+
+            }
+        });
+
+        planList.setOnMenuItemClickListener(new SlideAndDragListView.OnMenuItemClickListener() {
+            @Override
+            public int onMenuItemClick(View v, int itemPosition, int buttonPosition, int direction) {
+                Plan plan = (Plan) adapter.getItem(itemPosition);
+                int id = plan.getId();
+                switch (direction) {
+                    case MenuItem.DIRECTION_LEFT:
+                        return Menu.ITEM_SCROLL_BACK;
+
+                    case MenuItem.DIRECTION_RIGHT:
+                        switch (buttonPosition) {
+                            case 1: //Complete
+                                SQLManager.getInstance().completePlan(id);
+                                PlanManager.getInstance().updatePlans();
+                                adapter.changeList();
+                                return Menu.ITEM_SCROLL_BACK;
+                            case 0: //Cancel
+                                SQLManager.getInstance().cancelPlan(id);
+                                PlanManager.getInstance().updatePlans();
+                                adapter.changeList();
+                                return Menu.ITEM_DELETE_FROM_BOTTOM_TO_TOP;
+                        }
+                        return Menu.ITEM_SCROLL_BACK;
+
+                    default:
+                        return Menu.ITEM_NOTHING;
+                }
+            }
+        });
     }
 
     @Override
