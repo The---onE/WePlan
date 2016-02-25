@@ -5,12 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.xmx.weplan.Constants;
 import com.xmx.weplan.Database.PlanManager;
-import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
 import java.util.List;
@@ -56,9 +54,6 @@ public class PlanCardAdapter extends BaseAdapter {
         TextView remind;
         TextView daily;
         TextView period;
-
-        Button complete;
-        Button cancel;
     }
 
     @Override
@@ -73,8 +68,6 @@ public class PlanCardAdapter extends BaseAdapter {
             holder.remind = (TextView) convertView.findViewById(R.id.card_remind_tag);
             holder.daily = (TextView) convertView.findViewById(R.id.card_daily_tag);
             holder.period = (TextView) convertView.findViewById(R.id.card_period_tag);
-            holder.complete = (Button) convertView.findViewById(R.id.card_complete);
-            holder.cancel = (Button) convertView.findViewById(R.id.card_cancel);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -125,27 +118,6 @@ public class PlanCardAdapter extends BaseAdapter {
                 }
                 holder.period.setText(periodString);
                 holder.period.setVisibility(View.VISIBLE);
-            }
-
-            final int id = plan.getId();
-            if (id > 0) {
-                holder.complete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        SQLManager.getInstance().completePlan(id);
-                        PlanManager.getInstance().updatePlans();
-                        changeList();
-                    }
-                });
-
-                holder.cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        SQLManager.getInstance().cancelPlan(id);
-                        PlanManager.getInstance().updatePlans();
-                        changeList();
-                    }
-                });
             }
         } else {
             holder.title.setText("加载失败");

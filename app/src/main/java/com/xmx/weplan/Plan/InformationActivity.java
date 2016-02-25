@@ -1,12 +1,18 @@
 package com.xmx.weplan.Plan;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.ListView;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
 import com.xmx.weplan.Database.PlanManager;
+import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
 import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
@@ -16,7 +22,7 @@ import cn.bingoogolapple.refreshlayout.BGARefreshViewHolder;
 public class InformationActivity extends BaseTempActivity
         implements BGARefreshLayout.BGARefreshLayoutDelegate {
 
-    ListView planList;
+    SwipeMenuListView planList;
     PlanCardAdapter adapter;
     BGARefreshLayout mRefreshLayout;
 
@@ -42,15 +48,53 @@ public class InformationActivity extends BaseTempActivity
         adapter = new PlanCardAdapter(this);
         planList.setAdapter(adapter);
 
-        initRefreshLayout();
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
 
-        int id = getIntent().getIntExtra("id", -1);
-        for (int i = 0; i < adapter.getCount(); ++i) {
-            if (adapter.getItemId(i) == id) {
-                planList.setSelection(i);
-                break;
+            @Override
+            public void create(SwipeMenu menu) {
+                SwipeMenuItem completeItem = new SwipeMenuItem(getApplicationContext());
+                completeItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9, 0xCE)));
+                completeItem.setWidth(300);
+                completeItem.setTitle("开始啦");
+                completeItem.setTitleSize(20);
+                completeItem.setTitleColor(Color.WHITE);
+                menu.addMenuItem(completeItem);
+
+                SwipeMenuItem cancelItem = new SwipeMenuItem(getApplicationContext());
+                cancelItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
+                cancelItem.setWidth(200);
+                cancelItem.setIcon(android.R.drawable.ic_menu_delete);
+                menu.addMenuItem(cancelItem);
             }
-        }
+        };
+
+        planList.setMenuCreator(creator);
+
+        planList.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                Plan plan = (Plan) adapter.getItem(position);
+                int id = plan.getId();
+                switch (index) {
+                    case 0: //Complete
+                        SQLManager.getInstance().completePlan(id);
+                        PlanManager.getInstance().updatePlans();
+                        adapter.changeList();
+                        break;
+                    case 1: //Cancel
+                        SQLManager.getInstance().cancelPlan(id);
+                        PlanManager.getInstance().updatePlans();
+                        adapter.changeList();
+                        break;
+                }
+                // false : close the menu; true : not close the menu
+                return false;
+            }
+        });
+
+        planList.setSwipeDirection(SwipeMenuListView.DIRECTION_LEFT);
+
+        initRefreshLayout();
     }
 
     private void initRefreshLayout() {
@@ -85,6 +129,13 @@ public class InformationActivity extends BaseTempActivity
 
     @Override
     protected void processLogic(Bundle savedInstanceState) {
+        int id = getIntent().getIntExtra("id", -1);
+        for (int i = 0; i < adapter.getCount(); ++i) {
+            if (adapter.getItemId(i) == id) {
+                planList.setSelection(i);
+                break;
+            }
+        }
     }
 
     @Override
