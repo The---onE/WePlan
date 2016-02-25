@@ -20,10 +20,17 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <ListView
-            android:id="@+id/list_plan_card"
+        <cn.bingoogolapple.refreshlayout.BGARefreshLayout
+            android:id="@+id/item_refresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/list_plan_card"
+                style="@style/MatchAuto"
+                android:fastScrollEnabled="true" />
+
+        </cn.bingoogolapple.refreshlayout.BGARefreshLayout>
 
     </LinearLayout>
 
