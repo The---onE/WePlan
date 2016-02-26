@@ -9,7 +9,6 @@ import com.xmx.weplan.Constants;
 
 import java.io.File;
 import java.util.Date;
-import java.util.Random;
 
 /**
  * Created by The_onE on 2015/10/23.

@@ -216,8 +216,10 @@ public class CloudManager {
             public void found(AVObject user, AVObject plan) {
                 if (repeat < 0) {
                     plan.put("actualTime", newTime);
+                    plan.put("planTime", newTime);
                 } else {
                     plan.put("actualTime", newTime);
+                    plan.put("planTime", newTime);
                     plan.put("repeat", 1);
                 }
 
@@ -247,8 +249,10 @@ public class CloudManager {
             public void found(AVObject user, AVObject plan) {
                 if (repeat < 0) {
                     plan.put("actualTime", newTime);
+                    plan.put("planTime", newTime);
                 } else {
                     plan.put("actualTime", newTime);
+                    plan.put("planTime", newTime);
                     plan.put("repeat", 1);
                 }
 

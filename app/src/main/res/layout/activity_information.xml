@@ -27,7 +27,8 @@
 
             <com.yydcdut.sdlv.SlideAndDragListView
                 android:id="@+id/list_plan_card"
-                style="@style/MatchAuto" />
+                style="@style/MatchAuto"
+                android:dividerHeight="10dp" />
 
         </cn.bingoogolapple.refreshlayout.BGARefreshLayout>
 

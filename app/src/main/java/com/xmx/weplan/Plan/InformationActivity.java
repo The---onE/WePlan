@@ -10,6 +10,7 @@ import android.view.View;
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
 import com.xmx.weplan.Database.PlanManager;
 import com.xmx.weplan.Database.SQLManager;
+import com.xmx.weplan.DisplayUtil;
 import com.xmx.weplan.R;
 import com.yydcdut.sdlv.Menu;
 import com.yydcdut.sdlv.MenuItem;
@@ -47,12 +48,12 @@ public class InformationActivity extends BaseTempActivity
         planList = getViewById(R.id.list_plan_card);
 
         Menu menu = new Menu(new ColorDrawable(Color.WHITE), true, 0);
-        menu.addItem(new MenuItem.Builder().setWidth(200)
+        menu.addItem(new MenuItem.Builder().setWidth(DisplayUtil.dip2px(this, 50))
                 .setBackground(new ColorDrawable(Color.RED))
                 .setDirection(MenuItem.DIRECTION_RIGHT)
                 .setIcon(getResources().getDrawable(android.R.drawable.ic_menu_delete))
                 .build());
-        menu.addItem(new MenuItem.Builder().setWidth(300)
+        menu.addItem(new MenuItem.Builder().setWidth(DisplayUtil.dip2px(this, 75))
                 .setBackground(new ColorDrawable(Color.GRAY))
                 .setText("开始啦")
                 .setDirection(MenuItem.DIRECTION_RIGHT)
