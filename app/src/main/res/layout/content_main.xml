@@ -15,37 +15,23 @@
 
     <include layout="@layout/content_clock" />
 
-    <TabHost
-        android:id="@+id/tabHost"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_above="@android:id/tabs"
+            android:layout_alignParentTop="true">
 
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
+            <android.support.v4.view.PagerTabStrip
+                android:id="@+id/pager_tab"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@android:id/tabs"
-                android:layout_alignParentTop="true">
-
-                <include layout="@layout/content_plan" />
-
-                <include layout="@layout/content_circle" />
-
-                <include layout="@layout/content_me" />
-
-            </FrameLayout>
-
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true" />
-        </RelativeLayout>
-    </TabHost>
+                android:layout_gravity="bottom" />
+        </android.support.v4.view.ViewPager>
+    </RelativeLayout>
 
 </LinearLayout>

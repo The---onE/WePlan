@@ -1,21 +1,23 @@
 package com.xmx.weplan;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.format.Time;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TabHost;
 
 import com.avos.avoscloud.AVObject;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
@@ -24,7 +26,6 @@ import com.xmx.weplan.Database.PlanManager;
 import com.xmx.weplan.Plan.AddPlanActivity;
 import com.xmx.weplan.Plan.InformationActivity;
 import com.xmx.weplan.Plan.Plan;
-import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.Plan.PlanAdapter;
 import com.xmx.weplan.User.Callback.AutoLoginCallback;
 import com.xmx.weplan.User.UserManager;
@@ -37,7 +38,8 @@ public class MainActivity extends BaseNavigationActivity {
 
     PlanAdapter adapter;
 
-    TabHost tabHost;
+    List<View> viewList;
+    List<String> titleList;
 
     long version = 0;
 
@@ -121,19 +123,58 @@ public class MainActivity extends BaseNavigationActivity {
     protected void initView(Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
 
-        Intent service = new Intent(this, TimerService.class);
-        startService(service);
+        adapter = new PlanAdapter(this);
 
-        tabHost = getViewById(R.id.tabHost);
-        tabHost.setup();
+        LayoutInflater lf = LayoutInflater.from(this);
+        View plan = lf.inflate(R.layout.content_plan, null);
+        View circle = lf.inflate(R.layout.content_circle, null);
+        View me = lf.inflate(R.layout.content_me, null);
 
-        tabHost.addTab(tabHost.newTabSpec("plan").setIndicator("计划").setContent(R.id.tab_plan));
-        tabHost.addTab(tabHost.newTabSpec("circle").setIndicator("圈子").setContent(R.id.tab_circle));
-        tabHost.addTab(tabHost.newTabSpec("me").setIndicator("我").setContent(R.id.tab_me));
+        viewList = new ArrayList<>();// 将要分页显示的View装入数组中
+        viewList.add(plan);
+        viewList.add(circle);
+        viewList.add(me);
+
+        titleList = new ArrayList<>();
+        titleList.add("计划");
+        titleList.add("圈子");
+        titleList.add("我");
+
+        PagerAdapter pagerAdapter = new PagerAdapter() {
+            @Override
+            public Object instantiateItem(ViewGroup container, int position) {
+                container.addView(viewList.get(position));
+
+                setViewListener();
+
+                return viewList.get(position);
+            }
+
+            @Override
+            public boolean isViewFromObject(View arg0, Object arg1) {
+                return arg0 == arg1;
+            }
+
+            @Override
+            public int getCount() {
+                return viewList.size();
+            }
+
+            @Override
+            public void destroyItem(ViewGroup container, int position, Object object) {
+                container.removeView(viewList.get(position));
+            }
+
+            @Override
+            public CharSequence getPageTitle(int position) {
+                return titleList.get(position);
+            }
+        };
+        ViewPager viewPager = getViewById(R.id.view_pager);
+        viewPager.setAdapter(pagerAdapter);
     }
 
-    @Override
-    protected void setListener() {
+    void setViewListener() {
         Button addPlan = getViewById(R.id.add_plan);
         addPlan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +184,6 @@ public class MainActivity extends BaseNavigationActivity {
         });
 
         ListView planList = getViewById(R.id.list_plan);
-        adapter = new PlanAdapter(this);
         planList.setAdapter(adapter);
 
         planList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -158,7 +198,15 @@ public class MainActivity extends BaseNavigationActivity {
     }
 
     @Override
+    protected void setListener() {
+
+    }
+
+    @Override
     protected void processLogic(Bundle savedInstanceState) {
+        Intent service = new Intent(this, TimerService.class);
+        startService(service);
+
         UserManager.getInstance().autoLogin(new AutoLoginCallback() {
             @Override
             public void success(AVObject user) {
