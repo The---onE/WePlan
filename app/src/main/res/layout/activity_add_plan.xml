@@ -24,7 +24,8 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="计划" />
+            android:hint="计划"
+            android:textSize="30sp" />
 
         <EditText
             android:id="@+id/text"
@@ -117,35 +118,24 @@
             </LinearLayout>
         </LinearLayout>
 
-        <TabHost
-            android:id="@+id/tabHost"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
+            <android.support.v4.view.ViewPager
+                android:id="@+id/view_pager"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true">
 
-                <FrameLayout
-                    android:id="@android:id/tabcontent"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentTop="true">
-
-                    <include layout="@layout/content_add_plan_by_time" />
-
-                    <include layout="@layout/content_add_plan_by_delay" />
-
-                </FrameLayout>
-
-                <TabWidget
-                    android:id="@android:id/tabs"
-                    android:layout_width="match_parent"
+                <android.support.v4.view.PagerTabStrip
+                    android:id="@+id/pager_tab"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true" />
-            </RelativeLayout>
-        </TabHost>
+                    android:layout_gravity="bottom" />
+            </android.support.v4.view.ViewPager>
+
+        </RelativeLayout>
 
     </LinearLayout>
 

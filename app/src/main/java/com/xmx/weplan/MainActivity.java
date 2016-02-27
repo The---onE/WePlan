@@ -145,7 +145,7 @@ public class MainActivity extends BaseNavigationActivity {
             public Object instantiateItem(ViewGroup container, int position) {
                 container.addView(viewList.get(position));
 
-                setViewListener();
+                setPagerListener(position);
 
                 return viewList.get(position);
             }
@@ -174,27 +174,31 @@ public class MainActivity extends BaseNavigationActivity {
         viewPager.setAdapter(pagerAdapter);
     }
 
-    void setViewListener() {
-        Button addPlan = getViewById(R.id.add_plan);
-        addPlan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(AddPlanActivity.class);
-            }
-        });
+    void setPagerListener(int position) {
+        switch (position) {
+            case 0:
+                Button addPlan = getViewById(R.id.add_plan);
+                addPlan.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(AddPlanActivity.class);
+                    }
+                });
 
-        ListView planList = getViewById(R.id.list_plan);
-        planList.setAdapter(adapter);
+                ListView planList = getViewById(R.id.list_plan);
+                planList.setAdapter(adapter);
 
-        planList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getBaseContext(), InformationActivity.class);
-                Plan plan = (Plan) adapter.getItem(position);
-                intent.putExtra("id", plan.getId());
-                startActivity(intent);
-            }
-        });
+                planList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getBaseContext(), InformationActivity.class);
+                        Plan plan = (Plan) adapter.getItem(position);
+                        intent.putExtra("id", plan.getId());
+                        startActivity(intent);
+                    }
+                });
+                break;
+        }
     }
 
     @Override

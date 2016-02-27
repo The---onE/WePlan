@@ -23,7 +23,6 @@
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@android:id/tabs"
             android:layout_alignParentTop="true">
 
             <android.support.v4.view.PagerTabStrip

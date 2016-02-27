@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tab_delay"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
 
         <EditText
             android:id="@+id/delay_year"
@@ -88,22 +89,11 @@
             android:text="秒后" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/delay_ok"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_alignParentBottom="true"
+        android:text="添加" />
 
-        <Button
-            android:id="@+id/delay_ok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="添加" />
-
-        <Button
-            android:id="@+id/delay_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="取消" />
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
