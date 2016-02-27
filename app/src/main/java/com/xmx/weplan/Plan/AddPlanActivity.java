@@ -1,5 +1,6 @@
 package com.xmx.weplan.Plan;
 
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -12,15 +13,22 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
+import com.bigkoo.pickerview.TimePickerView;
 import com.xmx.weplan.ActivityBase.BaseTempActivity;
 import com.xmx.weplan.Constants;
 import com.xmx.weplan.Database.SQLManager;
 import com.xmx.weplan.R;
 
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class AddPlanActivity extends BaseTempActivity {
     EditText titleText;
@@ -32,12 +40,8 @@ public class AddPlanActivity extends BaseTempActivity {
     CheckBox dailyCheck;
     CheckBox periodCheck;
 
-    EditText yearText;
-    EditText monthText;
-    EditText dayText;
-    EditText hourText;
-    EditText minuteText;
-    EditText secondText;
+    TextView TimeTextView;
+    Date planTime;
 
     EditText delayYearText;
     EditText delayMonthText;
@@ -185,20 +189,11 @@ public class AddPlanActivity extends BaseTempActivity {
     void initPagerView(int position) {
         switch (position) {
             case 0:
-                yearText = getViewById(R.id.year);
-                monthText = getViewById(R.id.month);
-                dayText = getViewById(R.id.day);
-                hourText = getViewById(R.id.hour);
-                minuteText = getViewById(R.id.min);
-                secondText = getViewById(R.id.sec);
-
-                Date now = new Date(System.currentTimeMillis());
-                yearText.setText("" + (now.getYear() + 1900));
-                monthText.setText("" + (now.getMonth() + 1));
-                dayText.setText("" + now.getDate());
-                hourText.setText("" + now.getHours());
-                minuteText.setText("" + now.getMinutes());
-                secondText.setText("" + now.getSeconds());
+                TimeTextView = getViewById(R.id.time_tv);
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                String time = df.format(new Date());
+                TimeTextView.setText(time);
+                TimeTextView.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
                 break;
 
             case 1:
@@ -216,78 +211,36 @@ public class AddPlanActivity extends BaseTempActivity {
     void setPagerListener(int position) {
         switch (position) {
             case 0:
+                final TimePickerView pvTime = new TimePickerView(this, TimePickerView.Type.ALL);
+                Calendar calendar = Calendar.getInstance();
+                pvTime.setRange(calendar.get(Calendar.YEAR), calendar.get(Calendar.YEAR) + 99);
+                pvTime.setTime(new Date());
+                pvTime.setCancelable(true);
+                pvTime.setCyclic(true);
+                pvTime.setOnTimeSelectListener(new TimePickerView.OnTimeSelectListener() {
+                    @Override
+                    public void onTimeSelect(Date date) {
+                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                        String time = df.format(date);
+                        TimeTextView.setText(time);
+                        planTime = date;
+                    }
+                });
+                TimeTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        pvTime.show();
+                    }
+                });
+
+
                 Button timeOk = getViewById(R.id.time_ok);
                 timeOk.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (yearText.getText().toString().equals("")) {
-                            showToast("请输入年份");
-                            return;
-                        } else if (monthText.getText().toString().equals("")) {
-                            showToast("请输入月份");
-                            return;
-                        } else if (dayText.getText().toString().equals("")) {
-                            showToast("请输入日期");
-                            return;
-                        } else if (hourText.getText().toString().equals("")) {
-                            showToast("请输入小时");
-                            return;
-                        } else if (minuteText.getText().toString().equals("")) {
-                            showToast("请输入分钟");
-                            return;
-                        } else if (secondText.getText().toString().equals("")) {
-                            showToast("请输入秒钟");
-                            return;
-                        }
-
-                        Date plan = new Date(System.currentTimeMillis());
-                        int year = getEditViewInt(yearText);
-                        int month = getEditViewInt(monthText);
-                        int day = getEditViewInt(dayText);
-                        int hour = getEditViewInt(hourText);
-                        int minute = getEditViewInt(minuteText);
-                        int second = getEditViewInt(secondText);
-                        if (year <= 2099) {
-                            plan.setYear(year - 1900);
-                        } else {
-                            showToast("年份过大");
-                            return;
-                        }
-                        if (1 <= month && month <= 12) {
-                            plan.setMonth(month - 1);
-                        } else {
-                            showToast("月份格式不正确");
-                            return;
-                        }
-                        if (1 <= day && day <= Constants.DAYS_OF_MONTH[month - 1]) {
-                            plan.setDate(day);
-                        } else {
-                            showToast("日期格式不正确");
-                            return;
-                        }
-                        if (0 <= hour && hour <= 30) {
-                            plan.setHours(hour);
-                        } else {
-                            showToast("小时格式不正确");
-                            return;
-                        }
-                        if (0 <= minute && minute <= 59) {
-                            plan.setMinutes(minute);
-                        } else {
-                            showToast("分钟格式不正确");
-                            return;
-                        }
-                        if (0 <= second && second <= 59) {
-                            plan.setSeconds(second);
-
-                        } else {
-                            showToast("秒格式不正确");
-                            return;
-                        }
-
                         long now = System.currentTimeMillis();
-                        if (plan.getTime() > now) {
-                            insertPlan(plan);
+                        if (planTime.getTime() > now) {
+                            insertPlan(planTime);
                         } else {
                             showToast("请输入将来的时间");
                         }
