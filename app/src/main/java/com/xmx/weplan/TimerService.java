@@ -163,8 +163,23 @@ public class TimerService extends Service {
         super.onCreate();
 
         getLatestPlan();
-
         timerHandler.sendEmptyMessage(0);
+        setForeground();
+    }
+
+    void setForeground() {
+        int notificationId = -1;
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("微计划")
+                        .setContentIntent(contentIntent)
+                        .setWhen(0)
+                        .setContentText("正在管理您的计划");
+        Notification notification = mBuilder.build();
+        startForeground(notificationId, notification);
     }
 
     @Override
