@@ -46,6 +46,8 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'de.greenrobot:eventbus:2.4.0'
 
+    compile 'com.loopj.android:android-async-http:1.4.9'
+
     //avoscloud-sdk 为 LeanCloud基础包
     compile 'cn.leancloud.android:avoscloud-sdk:v3.12.3'
 

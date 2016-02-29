@@ -18,8 +18,11 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.avos.avoscloud.AVObject;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
 import com.xmx.weplan.Database.CloudManager;
 import com.xmx.weplan.Database.PlanManager;
@@ -31,7 +34,10 @@ import com.xmx.weplan.User.Callback.AutoLoginCallback;
 import com.xmx.weplan.User.UserManager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends BaseNavigationActivity {
     private long exitTime = 0;
@@ -40,6 +46,8 @@ public class MainActivity extends BaseNavigationActivity {
 
     List<View> viewList;
     List<String> titleList;
+
+    TextView tv;
 
     long version = 0;
 
@@ -195,6 +203,42 @@ public class MainActivity extends BaseNavigationActivity {
                         Plan plan = (Plan) adapter.getItem(position);
                         intent.putExtra("id", plan.getId());
                         startActivity(intent);
+                    }
+                });
+                break;
+
+            case 1:
+                tv = getViewById(R.id.json);
+                Date date = new Date();
+                int month = date.getMonth();
+                int day = date.getDay();
+                String urlString = "http://v.juhe.cn/todayOnhistory/queryEvent.php?key="
+                        + Constants.TOH_APP_KEY + "&date=" + month + "/" + day;
+                AsyncHttpClient client = new AsyncHttpClient();
+                client.get(urlString, new AsyncHttpResponseHandler() {
+
+                    @Override
+                    public void onStart() {
+                        // called before request is started
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+                        // called when response HTTP status is "200 OK"
+                        String s = new String(response);
+                        tv.setText(s);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
+                        // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                        tv.setText("Error " + statusCode);
+                    }
+
+                    @Override
+                    public void onRetry(int retryNo) {
+                        // called when request is retried
+                        tv.setText("Retrying");
                     }
                 });
                 break;
