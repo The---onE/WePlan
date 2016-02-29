@@ -25,6 +25,8 @@ public class TimerService extends Service {
     long latestTime;
     long latestPlanTime;
     int latestRepeat;
+    int latestPeriod;
+
     boolean latestFlag = false;
 
     Handler timerHandler = new Handler() {
@@ -46,6 +48,8 @@ public class TimerService extends Service {
             latestTitle = SQLManager.getTitle(c);
             latestPlanTime = SQLManager.getPlanTime(c);
             latestRepeat = SQLManager.getRepeat(c);
+            latestPeriod = SQLManager.getPeriod(c);
+
             latestFlag = true;
         } else {
             latestFlag = false;
@@ -86,7 +90,7 @@ public class TimerService extends Service {
         int notificationId = (title + "|" + id).hashCode();
 
         Intent intent = new Intent(this, NotificationTempActivity.class);
-        intent.putExtra("start", true);
+        intent.putExtra("start", false);
         intent.putExtra("id", id);
         intent.putExtra("title", title);
         PendingIntent contentIntent = PendingIntent.getActivity(this, notificationId,
@@ -102,10 +106,31 @@ public class TimerService extends Service {
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle("时间到啦")
                         .setAutoCancel(true)
-                        .setOngoing(true)
                         .setContentIntent(contentIntent)
                         .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
                         .setContentText(content);
+
+        if (latestPeriod > 0) {
+            int startId = (title + "|" + id + "s").hashCode();
+            Intent startIntent = new Intent(this, NotificationTempActivity.class);
+            startIntent.putExtra("start", true);
+            startIntent.putExtra("id", id);
+            startIntent.putExtra("title", title);
+            PendingIntent startPending = PendingIntent.getActivity(this, startId,
+                    startIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            int delayId = (title + "|" + id + "d").hashCode();
+            Intent delayIntent = new Intent(this, NotificationTempActivity.class);
+            delayIntent.putExtra("start", false);
+            delayIntent.putExtra("id", id);
+            delayIntent.putExtra("title", title);
+            PendingIntent delayPending = PendingIntent.getActivity(this, delayId,
+                    delayIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            mBuilder.addAction(R.drawable.ic_menu_send, "重算周期", startPending)
+                    .addAction(R.drawable.ic_menu_slideshow, "知道啦", delayPending);
+        }
+
         NotificationManager manager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = mBuilder.build();

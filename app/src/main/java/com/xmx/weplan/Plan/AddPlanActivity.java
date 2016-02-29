@@ -170,11 +170,11 @@ public class AddPlanActivity extends BaseTempActivity {
         if (periodFlag) {
             type = Constants.PERIOD_TYPE;
             EditText periodHourText = getViewById(R.id.period_hour);
-            int periodHour = Integer.valueOf(periodHourText.getText().toString());
+            int periodHour = getEditViewInt(periodHourText);
             EditText periodMinuteText = getViewById(R.id.period_minute);
-            int periodMinute = Integer.valueOf(periodMinuteText.getText().toString());
+            int periodMinute = getEditViewInt(periodMinuteText);
             EditText periodSecondText = getViewById(R.id.period_second);
-            int periodSecond = Integer.valueOf(periodSecondText.getText().toString());
+            int periodSecond = getEditViewInt(periodSecondText);
 
             period = (periodSecond + periodMinute * 60 + periodHour * 60 * 60) * 1000;
             if (period <= Constants.MIN_PERIOD) {
