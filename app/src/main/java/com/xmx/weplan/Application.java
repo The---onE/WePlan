@@ -3,6 +3,7 @@ package com.xmx.weplan;
 import com.avos.avoscloud.AVOSCloud;
 import com.xmx.weplan.Database.CloudManager;
 import com.xmx.weplan.Database.DataManager;
+import com.xmx.weplan.TodayOnHistory.TOHManager;
 import com.xmx.weplan.User.UserManager;
 
 /**
@@ -21,5 +22,7 @@ public class Application extends android.app.Application {
         DataManager.getInstance().setContext(this);
         CloudManager.getInstance().setContext(this);
         UserManager.getInstance().setContext(this);
+
+        TOHManager.getInstance().setContext(this);
     }
 }
