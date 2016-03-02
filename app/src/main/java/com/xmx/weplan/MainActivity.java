@@ -18,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.avos.avoscloud.AVObject;
 import com.loopj.android.http.AsyncHttpClient;
@@ -30,8 +29,14 @@ import com.xmx.weplan.Plan.AddPlanActivity;
 import com.xmx.weplan.Plan.InformationActivity;
 import com.xmx.weplan.Plan.Plan;
 import com.xmx.weplan.Plan.PlanAdapter;
+import com.xmx.weplan.TodayOnHistory.TOHAdapter;
+import com.xmx.weplan.TodayOnHistory.TodayOnHistory;
 import com.xmx.weplan.User.Callback.AutoLoginCallback;
 import com.xmx.weplan.User.UserManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,7 +52,7 @@ public class MainActivity extends BaseNavigationActivity {
     List<View> viewList;
     List<String> titleList;
 
-    TextView tv;
+    ListView tohList;
 
     long version = 0;
 
@@ -208,9 +213,9 @@ public class MainActivity extends BaseNavigationActivity {
                 break;
 
             case 1:
-                tv = getViewById(R.id.json);
+                tohList = getViewById(R.id.toh);
                 Date date = new Date();
-                int month = date.getMonth();
+                int month = date.getMonth() + 1;
                 int day = date.getDay();
                 String urlString = "http://v.juhe.cn/todayOnhistory/queryEvent.php?key="
                         + Constants.TOH_APP_KEY + "&date=" + month + "/" + day;
@@ -225,20 +230,37 @@ public class MainActivity extends BaseNavigationActivity {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                         // called when response HTTP status is "200 OK"
-                        String s = new String(response);
-                        tv.setText(s);
+                        try {
+                            JSONObject jsonObject = new JSONObject(new String(response));
+                            JSONArray result = jsonObject.getJSONArray("result");
+                            List<TodayOnHistory> todayOnHistories = new ArrayList<>();
+                            for (int i = result.length() - 1; i >= 0; --i) {
+                                JSONObject item = result.getJSONObject(i);
+                                int id = item.getInt("e_id");
+                                String day = item.getString("day");
+                                String date = item.getString("date");
+                                String title = item.getString("title");
+                                TodayOnHistory todayOnHistory = new TodayOnHistory(id, day, date, title);
+                                todayOnHistories.add(todayOnHistory);
+                            }
+                            TOHAdapter tohAdapter = new TOHAdapter(getBaseContext(), todayOnHistories);
+                            tohList.setAdapter(tohAdapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            showToast("JSON Exception");
+                        }
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
                         // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                        tv.setText("Error " + statusCode);
+                        showToast("Error " + statusCode);
                     }
 
                     @Override
                     public void onRetry(int retryNo) {
                         // called when request is retried
-                        tv.setText("Retrying");
+                        showToast("Retrying");
                     }
                 });
                 break;
