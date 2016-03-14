@@ -191,7 +191,9 @@ public class AddPlanActivity extends BaseTempActivity {
             case 0:
                 TimeTextView = getViewById(R.id.time_tv);
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                String time = df.format(new Date());
+                Date date = new Date();
+                String time = df.format(date);
+                planTime = date;
                 TimeTextView.setText(time);
                 TimeTextView.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
                 break;

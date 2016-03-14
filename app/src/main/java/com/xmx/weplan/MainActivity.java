@@ -20,8 +20,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.avos.avoscloud.AVObject;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.xmx.weplan.ActivityBase.BaseNavigationActivity;
 import com.xmx.weplan.Database.CloudManager;
 import com.xmx.weplan.Database.PlanManager;
@@ -29,21 +27,13 @@ import com.xmx.weplan.Plan.AddPlanActivity;
 import com.xmx.weplan.Plan.InformationActivity;
 import com.xmx.weplan.Plan.Plan;
 import com.xmx.weplan.Plan.PlanAdapter;
-import com.xmx.weplan.TodayOnHistory.TOHAdapter;
 import com.xmx.weplan.TodayOnHistory.TOHManager;
-import com.xmx.weplan.TodayOnHistory.TodayOnHistory;
 import com.xmx.weplan.User.Callback.AutoLoginCallback;
 import com.xmx.weplan.User.UserManager;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends BaseNavigationActivity {
     private long exitTime = 0;
@@ -217,7 +207,7 @@ public class MainActivity extends BaseNavigationActivity {
                 tohList = getViewById(R.id.toh);
                 Date date = new Date();
                 int month = date.getMonth() + 1;
-                int day = date.getDay();
+                int day = date.getDate();
                 TOHManager.getInstance().setTodayOnHistory(month, day, tohList);
                 break;
         }
